@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Add Product</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    .card-hover { transition: box-shadow .2s ease, transform .2s ease; }
+    .card-hover:hover { box-shadow: 0 12px 22px rgba(0,0,0,.08); transform: translateY(-2px); }
+  </style>
+</head>
+<body class="bg-gray-50 text-gray-800">
+  <div class="min-h-screen flex items-center justify-center p-4">
+    <div class="w-full max-w-2xl bg-white border rounded-2xl p-6 md:p-8 card-hover">
+      <div class="flex items-center justify-between mb-6">
+        <h2 class="text-2xl font-bold">Add New Product</h2>
+        <a href="/my_products" class="text-sm text-emerald-700 hover:text-emerald-800">← My Products</a>
+      </div>
+
+      <!-- Keep the same action, method, field names, and enctype -->
+      <form action="/add_product" method="POST" enctype="multipart/form-data" class="space-y-5">
+        <!-- Product Name -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Product Name</label>
+          <input
+            type="text"
+            name="product_name"
+            required
+            placeholder="e.g. Basmati Rice"
+            class="w-full rounded-lg border-gray-300 focus:ring-emerald-500 focus:border-emerald-500 px-3 py-2"
+          />
+        </div>
+
+        <!-- Price -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Price (₹)</label>
+            <input
+              type="number"
+              name="price"
+              step="0.01"
+              min="0"
+              required
+              placeholder="e.g. 149.00"
+              class="w-full rounded-lg border-gray-300 focus:ring-emerald-500 focus:border-emerald-500 px-3 py-2"
+            />
+            <p class="text-xs text-gray-500 mt-1">Use decimals if needed (e.g., 49.50).</p>
+          </div>
+
+          <!-- Quantity -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Quantity</label>
+            <input
+              type="number"
+              name="quantity"
+              step="0.01"
+              min="0"
+              required
+              placeholder="e.g. 1, 5, 0.5"
+              class="w-full rounded-lg border-gray-300 focus:ring-emerald-500 focus:border-emerald-500 px-3 py-2"
+            />
+            <p class="text-xs text-gray-500 mt-1">Supports decimals (e.g., 0.5 kg).</p>
+          </div>
+        </div>
+
+        <!-- Unit -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Unit</label>
+          <input
+            type="text"
+            name="unit"
+            required
+            placeholder="e.g. kg, g, litre, piece"
+            class="w-full uppercase rounded-lg border-gray-300 focus:ring-emerald-500 focus:border-emerald-500 px-3 py-2"
+          />
+          <p class="text-xs text-gray-500 mt-1">Common: KG, G, LITRE, PIECE.</p>
+        </div>
+
+        <!-- Image Upload with Preview -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">Upload Image</label>
+
+          <div class="flex items-center gap-4">
+            <label class="flex-1">
+              <input
+                type="file"
+                name="image"
+                id="imageInput"
+                accept="image/*"
+                required
+                class="block w-full text-sm text-gray-700 file:mr-4 file:py-2 file:px-4
+                       file:rounded-lg file:border-0 file:text-sm file:font-medium
+                       file:bg-emerald-50 file:text-emerald-700
+                       hover:file:bg-emerald-100"
+              />
+              <p class="text-xs text-gray-500 mt-1">PNG/JPG recommended. Max a few MB.</p>
+            </label>
+            <img id="preview" src="" alt="Preview" class="hidden h-16 w-16 rounded-lg border object-cover" />
+          </div>
+        </div>
+
+        <!-- Submit -->
+        <div class="pt-2">
+          <button
+            type="submit"
+            class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-medium rounded-lg px-4 py-2.5"
+          >
+            Add Product
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Image preview JS (UI only, backend unchanged) -->
+  <script>
+    const input = document.getElementById('imageInput');
+    const preview = document.getElementById('preview');
+
+    if (input) {
+      input.addEventListener('change', (e) => {
+        const file = e.target.files && e.target.files[0];
+        if (!file) {
+          preview.classList.add('hidden');
+          preview.src = '';
+          return;
+        }
+        const url = URL.createObjectURL(file);
+        preview.src = url;
+        preview.classList.remove('hidden');
+      });
+    }
+  </script>
+</body>
+</html>

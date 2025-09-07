@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Admin — Sellers</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 font-sans">
+
+  <!-- Top Navigation -->
+  <header class="bg-white shadow sticky top-0 z-10">
+    <div class="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center">
+      <h1 class="font-bold text-lg text-emerald-600">SmartDukaan Admin</h1>
+      <nav class="space-x-4 text-sm">
+        <a href="{{ url_for('admin_dashboard') }}" class="hover:text-emerald-600">Dashboard</a>
+        <a href="{{ url_for('admin_sellers') }}" class="hover:text-emerald-600 font-medium">Sellers</a>
+        <a href="{{ url_for('admin_orders') }}" class="hover:text-emerald-600">Orders</a>
+        <a href="{{ url_for('admin_master_products') }}" class="hover:text-emerald-600">Master Products</a>
+        <a href="{{ url_for('admin_logout') }}" class="text-red-500 font-medium hover:text-red-600">Logout</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="max-w-7xl mx-auto p-6">
+
+    <div class="flex items-center justify-between mb-6">
+      <h2 class="text-xl font-bold text-gray-800">Sellers</h2>
+      <div class="text-sm text-gray-600">
+        Showing {{ pagination.total if pagination is defined else sellers|length }} sellers
+      </div>
+    </div>
+
+    <!-- Search & controls -->
+    <form method="get" class="mb-4 flex gap-2 items-center">
+      <input type="text" name="q" value="{{ q if q is defined else '' }}" placeholder="Search store, phone or owner" class="border rounded px-3 py-2 w-80" />
+      <label class="text-sm">Per page:
+        <select name="per_page" onchange="this.form.submit()" class="border rounded px-2 py-1 ml-2">
+          <option value="10" {% if per_page==10 %}selected{% endif %}>10</option>
+          <option value="25" {% if per_page==25 or per_page is not defined %}selected{% endif %}>25</option>
+          <option value="50" {% if per_page==50 %}selected{% endif %}>50</option>
+        </select>
+      </label>
+      <button type="submit" class="ml-2 px-4 py-2 rounded bg-emerald-600 text-white">Search</button>
+      <a href="{{ url_for('admin_master_products') }}" class="ml-auto text-sm text-gray-600">Manage Master Products</a>
+    </form>
+
+    <!-- Sellers table -->
+    <div class="bg-white rounded-xl shadow overflow-x-auto">
+      <table class="w-full text-sm">
+        <thead class="bg-gray-100 text-gray-700">
+          <tr>
+            <th class="px-4 py-3 text-left">#</th>
+            <th class="px-4 py-3 text-left">Store Name</th>
+            <th class="px-4 py-3 text-left">Owner</th>
+            <th class="px-4 py-3 text-left">Phone</th>
+            <th class="px-4 py-3 text-left">Registered</th>
+            <th class="px-4 py-3 text-left">Products</th>
+            <th class="px-4 py-3 text-left">Actions</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-200">
+          {% for seller in sellers %}
+          <tr class="hover:bg-gray-50">
+            <td class="px-4 py-2">{{ loop.index + ((pagination.page-1) * pagination.per_page) if pagination is defined else loop.index }}</td>
+            <td class="px-4 py-2 font-medium text-gray-900">{{ seller.store_name }}</td>
+            <td class="px-4 py-2">{{ seller.owner_name or '-' }}</td>
+            <td class="px-4 py-2">{{ seller.phone }}</td>
+            <td class="px-4 py-2">{{ seller.registered_at.strftime('%Y-%m-%d') if seller.registered_at else '-' }}</td>
+            <td class="px-4 py-2">{{ seller.products|length }}</td>
+            <td class="px-4 py-2">
+              <a href="{{ url_for('admin_view_seller', seller_id=seller.id) }}" class="text-blue-600 hover:underline mr-3">View</a>
+              <a href="{{ url_for('admin_edit_seller', seller_id=seller.id) }}" class="text-green-600 hover:underline mr-3">Edit</a>
+
+              <!-- Delete form (POST) - no CSRF token as requested -->
+              <form method="post" action="{{ url_for('admin_delete_seller', seller_id=seller.id) }}" style="display:inline" onsubmit="return confirm('Delete this seller? This will remove products & orders.');">
+                <button type="submit" class="text-red-600 hover:underline">Delete</button>
+              </form>
+            </td>
+          </tr>
+          {% else %}
+          <tr>
+            <td colspan="7" class="px-4 py-6 text-center text-gray-500">No sellers found.</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Pagination (simple) -->
+    {% if pagination is defined %}
+    <div class="mt-4 flex items-center justify-between">
+      <div class="text-sm text-gray-600">
+        Page {{ pagination.page }} of {{ pagination.pages }} — {{ pagination.total }} sellers
+      </div>
+      <div>
+        <nav class="inline-flex -space-x-px">
+          {% if pagination.has_prev %}
+            <a href="{{ url_for('admin_sellers', q=q, page=1, per_page=per_page) }}" class="px-3 py-1 border rounded-l">« First</a>
+            <a href="{{ url_for('admin_sellers', q=q, page=pagination.prev_num, per_page=per_page) }}" class="px-3 py-1 border">‹ Prev</a>
+          {% else %}
+            <span class="px-3 py-1 border rounded-l text-gray-400">« First</span>
+            <span class="px-3 py-1 border text-gray-400">‹ Prev</span>
+          {% endif %}
+
+          <span class="px-3 py-1 border bg-gray-50">{{ pagination.page }}</span>
+
+          {% if pagination.has_next %}
+            <a href="{{ url_for('admin_sellers', q=q, page=pagination.next_num, per_page=per_page) }}" class="px-3 py-1 border">Next ›</a>
+            <a href="{{ url_for('admin_sellers', q=q, page=pagination.pages, per_page=per_page) }}" class="px-3 py-1 border rounded-r">Last »</a>
+          {% else %}
+            <span class="px-3 py-1 border text-gray-400">Next ›</span>
+            <span class="px-3 py-1 border rounded-r text-gray-400">Last »</span>
+          {% endif %}
+        </nav>
+      </div>
+    </div>
+    {% endif %}
+
+  </main>
+</body>
+</html>

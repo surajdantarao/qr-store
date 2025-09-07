@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Master Products</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <!-- Tailwind CSS (UI only, logic unchanged) -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    .table-wrap { overflow-x: auto; }
+    .img-fallback { background: #f1f5f9; display:flex; align-items:center; justify-content:center; color:#64748b; }
+  </style>
+</head>
+<body class="bg-gray-50 text-gray-800">
+  <div class="max-w-6xl mx-auto px-4 py-6">
+    <div class="flex items-center justify-between mb-5">
+      <h1 class="text-2xl md:text-3xl font-bold">Master Products</h1>
+    </div>
+
+    <!-- Top actions -->
+    <div class="bg-white rounded-2xl border p-4 mb-4">
+      <div class="flex flex-col md:flex-row gap-3 md:items-center md:justify-between">
+        <div class="flex items-center gap-3">
+          <input id="selectAll" type="checkbox" class="h-4 w-4 rounded border-gray-300">
+          <label for="selectAll" class="text-sm font-medium">Select all</label>
+          <span id="selectedCount" class="text-xs px-2 py-1 rounded bg-emerald-50 text-emerald-700 border border-emerald-200 hidden"></span>
+        </div>
+
+        <div class="flex items-center gap-3">
+          <input id="searchBox" type="text" placeholder="Search product…"
+                 class="w-64 max-w-full rounded-lg border-gray-300 focus:ring-emerald-500 focus:border-emerald-500 px-3 py-2 text-sm">
+          <div class="text-xs text-gray-500">Tip: Fill price/qty/unit per selected item</div>
+        </div>
+      </div>
+    </div>
+
+    <form method="POST" class="space-y-4" id="mpForm">
+      <div class="table-wrap bg-white rounded-2xl border">
+        <table class="min-w-full text-sm">
+          <thead class="bg-gray-50 text-gray-600 sticky top-0">
+            <tr>
+              <th class="px-3 py-3 text-center w-12">Select</th>
+              <th class="px-3 py-3 text-left">Product</th>
+              <th class="px-3 py-3 text-center">Image</th>
+              <th class="px-3 py-3 text-center">Price (₹)</th>
+              <th class="px-3 py-3 text-center">Quantity</th>
+              <th class="px-3 py-3 text-center">Unit</th>
+            </tr>
+          </thead>
+          <tbody id="mpTableBody" class="divide-y">
+            {% for product in master_products %}
+            <tr class="hover:bg-gray-50"
+                data-name="{{ product.name|lower }}">
+              <!-- Select -->
+              <td class="px-3 py-3 text-center align-middle">
+                <input type="checkbox" name="product_ids" value="{{ product.id }}" class="row-check h-4 w-4 rounded border-gray-300">
+              </td>
+
+              <!-- Product name -->
+              <td class="px-3 py-3 align-top">
+                <div class="font-medium">{{ product.name }}</div>
+              </td>
+
+              <!-- Image (uses the same variable you already output) -->
+              <td class="px-3 py-3 text-center">
+                {% if product.image_url %}
+                  <img src="{{ product.image_url }}" alt="{{ product.name }}" class="inline-block h-14 w-14 object-cover rounded border">
+                {% else %}
+                  <div class="inline-flex h-14 w-14 rounded border img-fallback text-xs">No Image</div>
+                {% endif %}
+              </td>
+
+              <!-- Price -->
+              <td class="px-3 py-3 text-center">
+                <input type="number" step="0.01" min="0" name="price_{{ product.id }}" placeholder="e.g. 50"
+                       class="w-28 rounded-lg border-gray-300 focus:ring-emerald-500 focus:border-emerald-500 px-2 py-1.5">
+              </td>
+
+              <!-- Quantity -->
+              <td class="px-3 py-3 text-center">
+                <input type="number" step="0.01" min="0" name="qty_{{ product.id }}" placeholder="e.g. 10"
+                       class="w-24 rounded-lg border-gray-300 focus:ring-emerald-500 focus:border-emerald-500 px-2 py-1.5">
+              </td>
+
+              <!-- Unit -->
+              <td class="px-3 py-3 text-center">
+                <input type="text" name="unit_{{ product.id }}" placeholder="e.g. kg/pcs"
+                       class="w-28 rounded-lg border-gray-300 focus:ring-emerald-500 focus:border-emerald-500 px-2 py-1.5 uppercase">
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Submit bar -->
+      <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
+        <div class="text-xs text-gray-500">
+          Selected items will be added to your products after you provide price, quantity & unit.
+        </div>
+        <button type="submit" id="submitBtn"
+                class="inline-flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg px-5 py-2.5 disabled:opacity-50 disabled:cursor-not-allowed">
+          Add Selected Products
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <script>
+    // Elements
+    const selectAll = document.getElementById('selectAll');
+    const checks = document.querySelectorAll('.row-check');
+    const selectedCount = document.getElementById('selectedCount');
+    const submitBtn = document.getElementById('submitBtn');
+    const searchBox = document.getElementById('searchBox');
+    const rows = document.querySelectorAll('#mpTableBody tr');
+
+    function updateSelectionUI() {
+      const selected = document.querySelectorAll('.row-check:checked').length;
+      if (selected > 0) {
+        selectedCount.textContent = selected + ' selected';
+        selectedCount.classList.remove('hidden');
+        submitBtn.disabled = false;
+      } else {
+        selectedCount.classList.add('hidden');
+        submitBtn.disabled = true;
+      }
+      // Keep "select all" in sync
+      selectAll.checked = selected > 0 && selected === checks.length;
+      selectAll.indeterminate = selected > 0 && selected < checks.length;
+    }
+
+    // Select all handler
+    if (selectAll) {
+      selectAll.addEventListener('change', (e) => {
+        checks.forEach(cb => { cb.checked = e.target.checked; });
+        updateSelectionUI();
+      });
+    }
+
+    // Row checkbox listeners
+    checks.forEach(cb => cb.addEventListener('change', updateSelectionUI));
+
+    // Search filter (by product name only to keep logic simple)
+    if (searchBox) {
+      searchBox.addEventListener('input', (e) => {
+        const q = e.target.value.trim().toLowerCase();
+        rows.forEach(row => {
+          const name = row.getAttribute('data-name') || '';
+          const show = name.includes(q);
+          row.style.display = show ? '' : 'none';
+        });
+      });
+    }
+
+    // Initial
+    updateSelectionUI();
+  </script>
+</body>
+</html>

@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Seller Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <!-- Tailwind CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <style>
+    :root{
+      --brand-emerald: #10b981;
+      --brand-emerald-600: #059669;
+      --muted: #6b7280;
+    }
+    body { font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; background: #f7faf7; color: #0f172a; }
+    .card-hover { transition: transform .15s ease, box-shadow .15s ease; }
+    .card-hover:hover { transform: translateY(-4px); box-shadow: 0 10px 18px rgba(2,6,23,0.06); }
+    :focus-visible { outline: 3px solid rgba(16,185,129,0.18); outline-offset: 2px; border-radius: 8px; }
+  </style>
+</head>
+<body class="antialiased">
+
+  <!-- Sticky Top Bar -->
+  <header class="bg-white/95 backdrop-blur-sm border-b sticky top-0 z-50">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="h-16 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-lg bg-emerald-50 flex items-center justify-center text-emerald-600 font-bold">SD</div>
+          <div>
+            <div class="text-lg font-semibold">Seller Dashboard</div>
+            <div class="text-xs text-gray-500">Manage products • offers • orders</div>
+          </div>
+        </div>
+
+        <!-- Desktop nav -->
+        <nav class="hidden sm:flex items-center gap-3 text-sm">
+          <a href="{{ url_for('master_products') }}" class="px-3 py-2 rounded-lg hover:bg-gray-50">Master Products</a>
+          <a href="/add_product" class="px-3 py-2 rounded-lg hover:bg-gray-50">Add Product</a>
+          <a href="/my_products" class="px-3 py-2 rounded-lg hover:bg-gray-50">My Products</a>
+          <a href="/dashboard/orders" class="px-3 py-2 rounded-lg hover:bg-gray-50">Orders</a>
+          <a href="/dashboard/order_history" class="px-3 py-2 rounded-lg hover:bg-gray-50">Order History</a>
+          <a href="/logout" class="px-3 py-2 rounded-lg bg-red-50 text-red-600 hover:bg-red-100">Logout</a>
+        </nav>
+
+        <!-- Mobile menu button -->
+        <div class="sm:hidden">
+          <button id="mobile-menu-btn" aria-expanded="false" aria-controls="mobile-menu" class="p-2 rounded-lg hover:bg-gray-100">
+            <svg class="w-6 h-6 text-emerald-700" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+            <span class="sr-only">Open menu</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Mobile nav (collapsible) -->
+    <div id="mobile-menu" class="sm:hidden hidden border-t bg-white">
+      <div class="px-4 py-3 space-y-2">
+        <a href="{{ url_for('master_products') }}" class="block px-3 py-2 rounded-lg">Master Products</a>
+        <a href="/add_product" class="block px-3 py-2 rounded-lg">Add Product</a>
+        <a href="/my_products" class="block px-3 py-2 rounded-lg">My Products</a>
+        <a href="/dashboard/orders" class="block px-3 py-2 rounded-lg">Orders</a>
+        <a href="/dashboard/order_history" class="block px-3 py-2 rounded-lg">Order History</a>
+        <a href="/logout" class="block px-3 py-2 rounded-lg text-red-600 bg-red-50 rounded">Logout</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Page content -->
+  <main class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+
+    <!-- Welcome / QR row -->
+    <section class="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-6">
+      <div class="lg:col-span-2 bg-white rounded-2xl p-5 card-hover">
+        {% if user %}
+          <h2 class="text-2xl font-semibold">Welcome, <span class="text-emerald-600">{{ user.store_name }}</span></h2>
+          <p class="mt-2 text-sm text-gray-600">Manage your products, offers, and orders from this dashboard. Tip: keep your offer banner updated to show in the store sidebar.</p>
+        {% endif %}
+      </div>
+
+      <div class="bg-white rounded-2xl p-4 flex items-center gap-4 card-hover">
+        <div class="flex-1">
+          <p class="text-sm text-gray-500">Your Store QR</p>
+          {% if qr_code %}
+            <img src="{{ qr_code }}" alt="QR Code" class="w-36 h-36 rounded-lg border object-contain mt-2" />
+          {% else %}
+            <div class="w-36 h-36 rounded-lg border bg-gray-50 flex items-center justify-center mt-2 text-sm text-gray-400">No QR</div>
+          {% endif %}
+        </div>
+      </div>
+    </section>
+
+    <!-- Quick actions -->
+    <section class="mb-6">
+      <div class="grid grid-cols-3 sm:grid-cols-6 gap-3">
+        <a href="{{ url_for('master_products') }}" class="bg-white p-3 rounded-xl text-center card-hover">
+          <div class="text-2xl">📋</div>
+          <div class="text-xs mt-1 font-medium">Master</div>
+        </a>
+        <a href="/add_product" class="bg-white p-3 rounded-xl text-center card-hover">
+          <div class="text-2xl">➕</div>
+          <div class="text-xs mt-1 font-medium">Add</div>
+        </a>
+        <a href="/my_products" class="bg-white p-3 rounded-xl text-center card-hover">
+          <div class="text-2xl">📦</div>
+          <div class="text-xs mt-1 font-medium">My Products</div>
+        </a>
+        <a href="/dashboard/orders" class="bg-white p-3 rounded-xl text-center card-hover">
+          <div class="text-2xl">🧾</div>
+          <div class="text-xs mt-1 font-medium">Orders</div>
+        </a>
+        <a href="/dashboard/order_history" class="bg-white p-3 rounded-xl text-center card-hover">
+          <div class="text-2xl">📜</div>
+          <div class="text-xs mt-1 font-medium">History</div>
+        </a>
+        <a href="/logout" class="bg-white p-3 rounded-xl text-center card-hover">
+          <div class="text-2xl">🚪</div>
+          <div class="text-xs mt-1 font-medium text-red-600">Logout</div>
+        </a>
+      </div>
+    </section>
+
+    <!-- Two-column layout: status + offers (stack on mobile) -->
+    <section class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+
+      <!-- Store Status card -->
+      <div class="bg-white rounded-2xl p-5 card-hover">
+        <div class="flex items-center justify-between">
+          <h3 class="text-lg font-semibold">Store Status</h3>
+          <div class="text-xs inline-flex items-center gap-2 px-2 py-1 rounded-full
+            {% if store_status == 'open' %} bg-emerald-50 text-emerald-700 border border-emerald-100
+            {% else %} bg-gray-100 text-gray-600 border border-gray-100 {% endif %}">
+            <span class="w-2 h-2 rounded-full {% if store_status == 'open' %} bg-emerald-500 {% else %} bg-gray-400 {% endif %}"></span>
+            {{ store_status|capitalize }}
+          </div>
+        </div>
+
+        <form action="/update_store_status" method="POST" class="mt-4 space-y-3">
+          <input type="hidden" name="store_name" value="{{ user.store_name }}">
+          <label class="block text-sm font-medium text-gray-700">Select status</label>
+          <select name="status" class="w-full rounded-lg border-gray-200 focus:ring-emerald-500 focus:border-emerald-500">
+            <option value="open" {% if store_status == 'open' %}selected{% endif %}>Open</option>
+            <option value="closed" {% if store_status == 'closed' %}selected{% endif %}>Closed</option>
+          </select>
+          <button type="submit" class="w-full mt-1 inline-flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg px-4 py-2 text-sm">
+            Update Status
+          </button>
+        </form>
+      </div>
+
+      <!-- Offer management (larger) -->
+      <div class="lg:col-span-2 bg-white rounded-2xl p-5 card-hover">
+        <div class="flex items-center justify-between">
+          <h3 class="text-lg font-semibold flex items-center gap-2">🎁 Special Offer Management</h3>
+          <p class="text-sm text-gray-500">This banner appears in the customer store sidebar (desktop) and as a compact banner on mobile.</p>
+        </div>
+
+        {% if offer %}
+          <div class="mt-4 grid grid-cols-1 sm:grid-cols-3 gap-4 items-start">
+            <div class="sm:col-span-2">
+              <h4 class="text-base font-semibold">{{ offer.title }}</h4>
+              <p class="text-sm text-gray-600 mt-1">{{ offer.description }}</p>
+
+              <div class="mt-4 flex flex-wrap gap-3">
+                <form action="{{ url_for('delete_offer') }}" method="POST" onsubmit="return confirm('Delete this offer?');">
+                  <button type="submit" class="inline-flex items-center gap-2 bg-red-600 hover:bg-red-700 text-white text-sm rounded-lg px-4 py-2">🗑️ Delete Offer</button>
+                </form>
+
+                <a href="{{ url_for('admin_master_products') }}" class="inline-flex items-center gap-2 bg-gray-50 border rounded-lg px-4 py-2 text-sm hover:bg-gray-100">Manage Master Products</a>
+              </div>
+            </div>
+
+            <div class="w-full sm:w-auto">
+              {% if offer.image_path %}
+                <img src="{{ url_for('static', filename=offer.image_path) }}" alt="Offer banner" class="w-full h-36 object-cover rounded-lg border" />
+              {% else %}
+                <div class="w-full h-36 bg-gray-50 rounded-lg border flex items-center justify-center text-sm text-gray-400">No image</div>
+              {% endif %}
+            </div>
+          </div>
+
+        {% else %}
+          <form action="{{ url_for('add_offer') }}" method="POST" enctype="multipart/form-data" class="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div class="space-y-2">
+              <label for="title" class="text-sm font-medium text-gray-700">Offer Title</label>
+              <input id="title" name="title" required class="w-full rounded-lg border-gray-200 focus:ring-emerald-500 focus:border-emerald-500 px-3 py-2" />
+              <label for="description" class="text-sm font-medium text-gray-700 mt-2">Short Description</label>
+              <textarea id="description" name="description" rows="3" required class="w-full rounded-lg border-gray-200 focus:ring-emerald-500 focus:border-emerald-500 px-3 py-2"></textarea>
+            </div>
+
+            <div class="space-y-2">
+              <label for="image" class="text-sm font-medium text-gray-700">Upload Banner Image</label>
+              <input id="image" name="image" type="file" accept="image/*" required class="w-full text-sm" />
+              <p class="text-xs text-gray-500">Recommended: 1200×600px (jpg/png). Keep file size small for mobile.</p>
+
+              <div class="mt-4">
+                <button type="submit" class="w-full inline-flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg px-4 py-2">Upload Offer</button>
+              </div>
+            </div>
+          </form>
+        {% endif %}
+      </div>
+    </section>
+
+    <!-- (Optional) Additional quick panels: Recent orders, product count etc. -->
+    <section class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+      <div class="bg-white rounded-2xl p-5 card-hover">
+        <h4 class="text-sm font-medium text-gray-600">Products</h4>
+        <div class="mt-3 text-2xl font-semibold text-emerald-600">{{ total_products if total_products is defined else '-' }}</div>
+        <a href="/my_products" class="mt-4 inline-block text-sm text-emerald-700">View products →</a>
+      </div>
+
+      <div class="bg-white rounded-2xl p-5 card-hover">
+        <h4 class="text-sm font-medium text-gray-600">Active Orders</h4>
+        <div class="mt-3 text-2xl font-semibold text-emerald-600">{{ active_orders if active_orders is defined else '-' }}</div>
+        <a href="/dashboard/orders" class="mt-4 inline-block text-sm text-emerald-700">Manage orders →</a>
+      </div>
+
+      <div class="bg-white rounded-2xl p-5 card-hover">
+        <h4 class="text-sm font-medium text-gray-600">Master Products</h4>
+        <div class="mt-3 text-2xl font-semibold text-emerald-600">{{ total_master_products if total_master_products is defined else '-' }}</div>
+        <a href="{{ url_for('master_products') }}" class="mt-4 inline-block text-sm text-emerald-700">Browse master list →</a>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="py-6 text-center text-sm text-gray-500">
+    © {{ 2025 }} SmartDukaan
+  </footer>
+
+  <!-- Preserve your JS logic unchanged -->
+  <script>
+    // Mobile menu toggle
+    const mobileBtn = document.getElementById('mobile-menu-btn');
+    const mobileMenu = document.getElementById('mobile-menu');
+    if (mobileBtn && mobileMenu) {
+      mobileBtn.addEventListener('click', () => {
+        const expanded = mobileBtn.getAttribute('aria-expanded') === 'true';
+        mobileBtn.setAttribute('aria-expanded', String(!expanded));
+        mobileMenu.classList.toggle('hidden');
+      });
+    }
+
+    // Keep existing polling logic (unchanged)
+    function playBeep() {
+      try {
+        const audio = new Audio("/static/beep.mp3");
+        audio.play().catch(()=>{ /* ignore */ });
+      } catch(e) { /* ignore */ }
+    }
+
+    function checkOrders() {
+      fetch('/check_new_orders')
+        .then(res => res.json())
+        .then(data => {
+          if (data && data.new_order) {
+            playBeep();
+            // Small non-blocking visual notice (instead of alert on mobile)
+            const n = document.createElement('div');
+            n.textContent = '📦 New order received';
+            n.className = 'fixed top-4 right-4 bg-emerald-700 text-white px-4 py-2 rounded-lg shadow z-50';
+            document.body.appendChild(n);
+            setTimeout(()=> n.remove(), 2500);
+          }
+        }).catch(()=>{ /* network errors ignored */ });
+    }
+
+    // start polling every 5 seconds
+    setInterval(checkOrders, 5000);
+  </script>
+</body>
+</html>

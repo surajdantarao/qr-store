@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Admin Login</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <!-- TailwindCSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Inter font (optional) -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    body { font-family: 'Inter', system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; }
+  </style>
+</head>
+<body class="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+
+  <div class="w-full max-w-md">
+    <!-- Brand -->
+    <div class="text-center mb-6">
+      <a href="/" class="inline-flex items-center gap-2 text-emerald-600 font-extrabold text-2xl">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                d="M3 7h18M5 7v10a2 2 0 002 2h10a2 2 0 002-2V7M9 7V5a3 3 0 013-3v0a3 3 0 013 3v2" />
+        </svg>
+        SmartDukaan Admin
+      </a>
+      <p class="text-gray-500 mt-1 text-sm">Please sign in to continue</p>
+    </div>
+
+    <!-- Card -->
+    <div class="bg-white rounded-2xl shadow-lg border border-gray-100 p-6">
+      <!-- Flash/Error (Jinja optional) -->
+      {% if error %}
+        <div class="mb-4 rounded-lg border border-red-200 bg-red-50 text-red-800 px-4 py-3 text-sm">
+          {{ error }}
+        </div>
+      {% endif %}
+
+      <form method="POST" class="space-y-4">
+        <!-- Username -->
+        <div>
+          <label for="username" class="block text-sm font-semibold text-gray-800 mb-1">Username</label>
+          <input
+            id="username"
+            name="username"
+            type="text"
+            required
+            autocomplete="username"
+            placeholder="Enter admin username"
+            class="w-full rounded-xl border border-gray-200 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-emerald-300"
+          />
+        </div>
+
+        <!-- Password -->
+        <div>
+          <label for="password" class="block text-sm font-semibold text-gray-800 mb-1">Password</label>
+          <div class="relative">
+            <input
+              id="password"
+              name="password"
+              type="password"
+              required
+              autocomplete="current-password"
+              placeholder="Enter password"
+              class="w-full rounded-xl border border-gray-200 px-4 py-3 pr-11 focus:outline-none focus:ring-2 focus:ring-emerald-300"
+            />
+            <button
+              type="button"
+              id="togglePass"
+              class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+              aria-label="Show password"
+            >
+              <!-- eye icon -->
+              <svg id="eyeOpen" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 block" viewBox="0 0 20 20" fill="currentColor">
+                <path d="M10 3c-4.5 0-8.3 2.9-9.6 7 .6 1.9 1.8 3.5 3.3 4.7C5.4 16.5 7.6 17 10 17s4.6-.5 6.3-1.3c1.5-1.2 2.7-2.8 3.3-4.7C18.3 5.9 14.5 3 10 3zm0 12c-3.6 0-6.6-1.9-8.2-5 1.6-3.1 4.6-5 8.2-5s6.6 1.9 8.2 5c-1.6 3.1-4.6 5-8.2 5zm0-8a3 3 0 100 6 3 3 0 000-6z"/>
+              </svg>
+              <svg id="eyeClosed" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 hidden" viewBox="0 0 20 20" fill="currentColor">
+                <path d="M3.28 2.22a.75.75 0 10-1.06 1.06l2.06 2.06C2.95 6.28 1.82 7.53 1 10c1.6 3.7 5 6 9 6 1.6 0 3.1-.34 4.44-.96l2.28 2.28a.75.75 0 101.06-1.06l-16.5-16.5zM10 15c-3.2 0-5.9-1.6-7.35-4.46.62-1.36 1.5-2.42 2.59-3.2l2.07 2.07A3 3 0 0010 13a3 3 0 002.59-1.59l1.96 1.96A8.9 8.9 0 0110 15zm0-8c.5 0 1 .1 1.44.28l-1.16 1.16A1.5 1.5 0 008.5 10c0 .28.08.54.22.76l-1.2 1.2A3 3 0 0110 7z"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- Submit -->
+        <button
+          type="submit"
+          class="w-full py-3.5 rounded-xl bg-emerald-600 text-white font-bold shadow hover:bg-emerald-700 transition"
+        >
+          Login
+        </button>
+      </form>
+
+      <!-- Footer actions -->
+      <div class="mt-4 text-center">
+        <a href="/" class="text-sm text-gray-500 hover:text-emerald-600">← Back to Home</a>
+      </div>
+    </div>
+
+    <!-- Small note -->
+    <p class="text-center text-xs text-gray-400 mt-4">© 2025 SmartDukaan. Admin Panel</p>
+  </div>
+
+  <script>
+    // simple password toggle (no backend logic change)
+    const pass = document.getElementById('password');
+    const toggle = document.getElementById('togglePass');
+    const eyeOpen = document.getElementById('eyeOpen');
+    const eyeClosed = document.getElementById('eyeClosed');
+
+    toggle.addEventListener('click', () => {
+      const isText = pass.type === 'text';
+      pass.type = isText ? 'password' : 'text';
+      eyeOpen.classList.toggle('hidden', !isText);
+      eyeClosed.classList.toggle('hidden', isText);
+      toggle.setAttribute('aria-label', isText ? 'Show password' : 'Hide password');
+    });
+  </script>
+</body>
+</html>

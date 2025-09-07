@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>{{ store_name }} - Store</title>
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Font Awesome -->
+  <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"/>
+
+  <!-- Inter font -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+    rel="stylesheet"
+  >
+
+  <style>
+    :root{
+      --brand-emerald: #10b981;
+      --brand-emerald-600: #059669;
+      --muted: #6b7280;
+      --bg-start: #ecfdf5;
+      --bg-end: #f8fafc;
+    }
+
+    html, body { height: 100%; }
+    body {
+      font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+      background: linear-gradient(180deg, var(--bg-start) 0%, var(--bg-end) 100%);
+      -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;
+      color: #0f172a;
+      margin: 0;
+      -webkit-tap-highlight-color: rgba(0,0,0,0);
+    }
+
+    :focus-visible {
+      outline: 3px solid rgba(16,185,129,0.18);
+      outline-offset: 2px;
+      border-radius: 8px;
+    }
+
+    /* clamp helper to avoid linter warnings */
+    .line-clamp-2 {
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      line-clamp: 2;
+    }
+
+    /* subtle card lift */
+    .card-hover { transition: transform .14s ease, box-shadow .14s ease; }
+    .card-hover:hover { transform: translateY(-4px); box-shadow: 0 10px 22px rgba(2,6,23,0.06); }
+
+    /* toast animation */
+    @keyframes toast-in { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* Make the floating order button slightly smaller on very small screens */
+    @media (max-width:420px) {
+      #order-button { padding: .6rem 0.9rem; font-size: 0.95rem; right: 0.6rem; bottom: 0.6rem; }
+    }
+  </style>
+</head>
+<body class="min-h-screen">
+
+  <div id="pageRoot"
+       data-store-slug="{{ slug }}"
+       class="w-full max-w-5xl mx-auto p-4 sm:p-6 md:p-8">
+
+    <!-- Header -->
+    <header class="text-center mb-4 sm:mb-6">
+      <h1 class="text-2xl sm:text-3xl md:text-4xl font-extrabold tracking-tight">
+        {{ store_name }} <span class="text-emerald-600">— Online Store</span>
+      </h1>
+      <p class="text-xs sm:text-sm md:text-base text-gray-500 mt-2">Fresh items • Fast checkout • Simple experience</p>
+    </header>
+
+    <!-- Store Closed -->
+    {% if store_status == 'closed' %}
+      <div class="mx-auto max-w-3xl bg-red-50 border border-red-200 text-red-800 p-3 sm:p-4 rounded-xl shadow-sm flex items-start gap-3 mb-6" role="alert" aria-live="polite">
+        <i class="fa-solid fa-circle-exclamation mt-0.5 text-red-500"></i>
+        <div>
+          <p class="font-semibold text-sm">Store Closed</p>
+          <p class="text-xs text-red-700">This store is currently closed. Please check back later.</p>
+        </div>
+      </div>
+    {% endif %}
+
+    <!-- Offer (kept simple) -->
+    {% if offer %}
+      <section class="mb-6">
+        <div class="rounded-2xl border border-emerald-200 bg-emerald-50 p-3 sm:p-4 md:p-5 flex flex-col md:flex-row items-start gap-3 card-hover">
+          <div class="text-emerald-600 text-2xl mt-0.5"><i class="fa-solid fa-tags" aria-hidden="true"></i></div>
+          <div class="flex-1">
+            <h2 class="text-sm sm:text-base md:text-lg font-semibold text-emerald-900">{{ offer.title }}</h2>
+            {% if offer.description %}
+              <p class="text-emerald-700 mt-1 text-xs sm:text-sm">{{ offer.description }}</p>
+            {% endif %}
+          </div>
+          {% if offer.image_path %}
+            <div class="mt-2 md:mt-0">
+              <img src="{{ url_for('static', filename=offer.image_path) }}" alt="{{ offer.title }}" loading="lazy" class="rounded-lg w-28 h-20 sm:w-36 sm:h-24 object-cover border"/>
+            </div>
+          {% endif %}
+        </div>
+      </section>
+    {% endif %}
+
+    <!-- Search -->
+    <form method="GET"
+          action="{{ url_for('store_home', slug=slug) }}"
+          class="mb-6 flex gap-2"
+          role="search" aria-label="Search products">
+      <label for="search" class="sr-only">Search products</label>
+      <input
+        id="search"
+        type="text"
+        name="q"
+        placeholder="Search products (e.g. milk, atta...)"
+        value="{{ search_query }}"
+        class="flex-grow px-4 py-3 rounded-l-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-emerald-400 text-sm sm:text-base"
+        autocomplete="off"
+      />
+      <button type="submit"
+              class="inline-flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white px-4 sm:px-5 py-3 rounded-r-xl shadow-sm transition text-sm sm:text-base"
+              aria-label="Search">
+        <i class="fas fa-search" aria-hidden="true"></i>
+        <span class="hidden sm:inline">Search</span>
+      </button>
+    </form>
+
+    <!-- Products -->
+    <section aria-labelledby="productsHeading" class="mb-8">
+      <div class="flex items-center justify-between mb-3">
+        <h2 id="productsHeading" class="text-lg sm:text-xl md:text-2xl font-semibold text-gray-800">Our Products</h2>
+        <span class="text-xs text-gray-500">Tap <span class="font-semibold">Add</span> to put items in your cart</span>
+      </div>
+
+      <!-- Grid: 2 cols mobile, 3 small tablet, 4 desktop -->
+      <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6">
+        {% for product in products %}
+          <article class="group bg-white border border-gray-100 rounded-2xl p-2 sm:p-3 md:p-4 flex flex-col shadow-sm card-hover"
+                   role="article" aria-label="{{ product.product_name }}">
+            <div class="w-full aspect-[4/3] rounded-lg overflow-hidden bg-gray-100 ring-1 ring-gray-100">
+              {% if product.image_url %}
+                {% if product.image_url.startswith('http') %}
+                  <img src="{{ product.image_url }}" alt="{{ product.product_name }}" loading="lazy" class="w-full h-full object-cover"/>
+                {% else %}
+                  <img src="{{ url_for('static', filename=product.image_url) }}" alt="{{ product.product_name }}" loading="lazy" class="w-full h-full object-cover"/>
+                {% endif %}
+              {% else %}
+                <div class="w-full h-full flex items-center justify-center text-gray-400 text-sm">No Image</div>
+              {% endif %}
+            </div>
+
+            <div class="mt-2 flex-1">
+              <h3 class="font-semibold text-sm sm:text-base text-gray-900 line-clamp-2">{{ product.product_name }}</h3>
+              <div class="mt-1 flex items-center justify-between">
+                <p class="text-base sm:text-lg font-bold text-emerald-600">₹{{ product.price }}</p>
+                <span class="text-xs text-gray-500 inline-flex items-center gap-1 px-2 py-1 rounded-full bg-gray-100">
+                  {{ product.unit or '' }}
+                </span>
+              </div>
+            </div>
+
+            <button
+              class="add-to-cart mt-3 sm:mt-4 w-full py-2.5 px-3 sm:px-4 bg-emerald-600 hover:bg-emerald-700 text-white font-medium rounded-xl shadow-sm transition text-sm"
+              data-name="{{ product.product_name }}"
+              data-price="{{ product.price }}"
+              type="button"
+              aria-label="Add {{ product.product_name }} to cart"
+            >
+              Add <i class="fa fa-plus-circle ml-1" aria-hidden="true"></i>
+            </button>
+          </article>
+        {% endfor %}
+      </div>
+    </section>
+
+    <!-- Floating Order Button -->
+    <button id="order-button"
+      class="fixed bottom-4 right-4 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-3 px-5 rounded-full shadow-xl z-40 focus:outline-none"
+      onclick="goToReview()"
+      type="button"
+      aria-label="Open cart">
+      <span class="hidden sm:inline">Your Order</span> <span class="sm:hidden">Cart</span> (<span id="order-count">0</span>)
+    </button>
+
+    <!-- Cart Summary Modal -->
+    <div id="overlay" class="fixed inset-0 bg-black/50 hidden z-40" onclick="closeCartSummary()" aria-hidden="true"></div>
+
+    <div id="cart-summary" class="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-white rounded-2xl shadow-2xl p-5 hidden z-50 w-[92vw] max-w-md border border-gray-200" role="dialog" aria-modal="true" aria-labelledby="cart-title">
+      <div class="flex justify-between items-center mb-3">
+        <h3 id="cart-title" class="text-lg sm:text-xl font-bold text-gray-900">Your Cart</h3>
+        <button onclick="closeCartSummary()" class="text-gray-500 text-2xl leading-none" aria-label="Close cart">&times;</button>
+      </div>
+
+      <div id="cart-items-list" class="space-y-2"></div>
+      <div id="cart-empty-message" class="text-center text-gray-500 py-6 hidden">Your cart is empty.</div>
+
+      <div id="cart-total-container" class="mt-4 pt-3 border-t border-gray-200">
+        <div class="flex justify-between font-bold text-base sm:text-lg text-gray-900">
+          <span>Total</span>
+          <span id="cart-total-price">₹0.00</span>
+        </div>
+        <button onclick="submitOrder()" class="mt-3 w-full py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-xl shadow-sm transition" aria-label="Place order">
+          Place Order
+        </button>
+      </div>
+    </div>
+
+    <!-- Hidden form -->
+    <form id="orderForm" method="POST" action="{{ url_for('order_review') }}" class="hidden" aria-hidden="true">
+      <input type="hidden" name="slug" id="storeSlugInput"/>
+      <input type="hidden" name="items_json" id="itemsInput"/>
+    </form>
+
+  </div>
+
+  <script>
+    /* ---------- LOGIC UNCHANGED: same functions/names as your original ---------- */
+
+    let cart = {};
+    const storeSlug = document.getElementById('pageRoot').dataset.storeSlug;
+
+    function updateCartUI() {
+      const cartCountSpan = document.getElementById('order-count');
+      const cartItemsList = document.getElementById('cart-items-list');
+      const cartTotalPriceSpan = document.getElementById('cart-total-price');
+      const cartEmptyMessage = document.getElementById('cart-empty-message');
+      const cartTotalContainer = document.getElementById('cart-total-container');
+
+      let totalQuantity = 0, totalPrice = 0;
+      cartItemsList.innerHTML = '';
+
+      if (Object.keys(cart).length === 0) {
+        cartEmptyMessage.classList.remove('hidden');
+        if(cartTotalContainer) cartTotalContainer.classList.add('hidden');
+      } else {
+        cartEmptyMessage.classList.add('hidden');
+        if(cartTotalContainer) cartTotalContainer.classList.remove('hidden');
+
+        for (const [productName, item] of Object.entries(cart)) {
+          totalQuantity += item.quantity;
+          totalPrice += item.price * item.quantity;
+
+          const row = document.createElement('div');
+          row.className = 'flex justify-between items-center py-2 bg-gray-50 px-3 rounded-lg';
+          row.innerHTML = `<span class="text-sm">${productName} x${item.quantity}</span>
+                           <span class="text-sm">₹${(item.price * item.quantity).toFixed(2)}</span>`;
+          cartItemsList.appendChild(row);
+        }
+      }
+
+      cartCountSpan.textContent = totalQuantity;
+      if(cartTotalPriceSpan) cartTotalPriceSpan.textContent = '₹' + totalPrice.toFixed(2);
+    }
+
+    function addToCart(name, price) {
+      if (cart[name]) cart[name].quantity++;
+      else cart[name] = { quantity: 1, price: Number(price) };
+      updateCartUI();
+
+      // small non-blocking toast for feedback
+      const t = document.createElement('div');
+      t.className = 'fixed bottom-6 right-6 bg-black/85 text-white px-4 py-2 rounded-lg z-50';
+      t.style.animation = 'toast-in .18s ease';
+      t.textContent = `${name} added`;
+      document.body.appendChild(t);
+      setTimeout(()=> t.remove(), 1100);
+    }
+
+    function goToReview() {
+      if (Object.keys(cart).length === 0) {
+        const empty = document.getElementById('cart-empty-message');
+        if (empty) empty.classList.remove('hidden');
+      }
+      showCartSummary();
+    }
+
+    function showCartSummary() {
+      const cs = document.getElementById('cart-summary');
+      const ov = document.getElementById('overlay');
+      if (cs) cs.classList.remove('hidden');
+      if (ov) ov.classList.remove('hidden');
+      updateCartUI();
+    }
+
+    function closeCartSummary() {
+      const cs = document.getElementById('cart-summary');
+      const ov = document.getElementById('overlay');
+      if (cs) cs.classList.add('hidden');
+      if (ov) ov.classList.add('hidden');
+    }
+
+    function submitOrder() {
+      if (Object.keys(cart).length === 0) return;
+      const storeInput = document.getElementById('storeSlugInput');
+      const itemsInput = document.getElementById('itemsInput');
+      if (storeInput) storeInput.value = storeSlug;
+      if (itemsInput) itemsInput.value = JSON.stringify(Object.entries(cart).map(([name, item]) => ({ name, ...item })));
+      document.getElementById('orderForm').submit();
+    }
+
+    window.onload = () => {
+      updateCartUI();
+      document.querySelectorAll('.add-to-cart').forEach(btn => {
+        btn.addEventListener('click', () => addToCart(btn.dataset.name, parseFloat(btn.dataset.price)));
+      });
+    }
+  </script>
+</body>
+</html>

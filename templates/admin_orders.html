@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Admin — Orders</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 font-sans">
+  <!-- Top Navigation -->
+  <header class="bg-white shadow sticky top-0 z-10">
+    <div class="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center">
+      <h1 class="font-bold text-lg text-emerald-600">SmartDukaan Admin</h1>
+      <nav class="space-x-4 text-sm">
+        <a href="{{ url_for('admin_dashboard') }}" class="hover:text-emerald-600">Dashboard</a>
+        <a href="{{ url_for('admin_sellers') }}" class="hover:text-emerald-600">Sellers</a>
+        <a href="{{ url_for('admin_orders') }}" class="hover:text-emerald-600 font-medium">Orders</a>
+        <a href="{{ url_for('admin_master_products') }}" class="hover:text-emerald-600">Master Products</a>
+        <a href="{{ url_for('admin_logout') }}" class="text-red-500 font-medium hover:text-red-600">Logout</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="max-w-7xl mx-auto p-6">
+    <div class="flex items-center justify-between mb-6">
+      <h2 class="text-xl font-bold text-gray-800">Orders</h2>
+      <div class="text-sm text-gray-600">Showing {{ pagination.total if pagination is defined else orders|length }} orders</div>
+    </div>
+
+    <!-- Filters -->
+    <form method="get" class="mb-4 grid grid-cols-1 md:grid-cols-6 gap-2 items-end">
+      <div>
+        <label class="text-sm text-gray-600">Status</label>
+        <select name="status" class="border rounded px-2 py-1 w-full">
+          <option value="">All</option>
+          {% for s in statuses %}
+            <option value="{{ s }}" {% if filters.status==s %}selected{% endif %}>{{ s }}</option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div>
+        <label class="text-sm text-gray-600">Store</label>
+        <input type="text" name="store" value="{{ filters.store }}" placeholder="Store name" class="border rounded px-2 py-1 w-full" />
+      </div>
+
+      <div>
+        <label class="text-sm text-gray-600">Cleared</label>
+        <select name="cleared" class="border rounded px-2 py-1 w-full">
+          <option value="" {% if filters.cleared=='' %}selected{% endif %}>All</option>
+          <option value="yes" {% if filters.cleared=='yes' %}selected{% endif %}>Yes</option>
+          <option value="no" {% if filters.cleared=='no' %}selected{% endif %}>No</option>
+        </select>
+      </div>
+
+      <div>
+        <label class="text-sm text-gray-600">From (YYYY-MM-DD)</label>
+        <input type="text" name="from" value="{{ filters['from'] }}" placeholder="2025-09-01" class="border rounded px-2 py-1 w-full" />
+      </div>
+
+      <div>
+        <label class="text-sm text-gray-600">To (YYYY-MM-DD)</label>
+        <input type="text" name="to" value="{{ filters['to'] }}" placeholder="2025-09-05" class="border rounded px-2 py-1 w-full" />
+      </div>
+
+      <div>
+        <button type="submit" class="px-4 py-2 bg-emerald-600 text-white rounded">Apply</button>
+      </div>
+    </form>
+
+    <!-- Orders table -->
+    <div class="bg-white rounded-xl shadow overflow-x-auto">
+      <table class="w-full text-sm">
+        <thead class="bg-gray-100 text-gray-700">
+          <tr>
+            <th class="px-4 py-3 text-left">ID</th>
+            <th class="px-4 py-3 text-left">Store</th>
+            <th class="px-4 py-3 text-left">Customer</th>
+            <th class="px-4 py-3 text-left">Total</th>
+            <th class="px-4 py-3 text-left">Status</th>
+            <th class="px-4 py-3 text-left">Cleared</th>
+            <th class="px-4 py-3 text-left">Created</th>
+            <th class="px-4 py-3 text-left">Actions</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-200">
+          {% for o, store_name in orders %}
+          <tr class="hover:bg-gray-50">
+            <td class="px-4 py-2">#{{ o.id }}</td>
+            <td class="px-4 py-2">{{ store_name }}</td>
+            <td class="px-4 py-2">{{ o.customer_phone }}</td>
+            <td class="px-4 py-2">₹{{ '%.2f'|format(o.total_amount or 0.0) }}</td>
+            <td class="px-4 py-2">{{ o.status }}</td>
+            <td class="px-4 py-2">{{ 'Yes' if o.is_cleared_by_seller else 'No' }}</td>
+            <td class="px-4 py-2">{{ o.created_at.strftime('%Y-%m-%d %H:%M') if o.created_at else '' }}</td>
+            <td class="px-4 py-2">
+              <a href="{{ url_for('admin_view_order', order_id=o.id) }}" class="text-blue-600 hover:underline mr-3">View</a>
+
+              <form method="post" action="{{ url_for('admin_delete_order', order_id=o.id) }}" style="display:inline" onsubmit="return confirm('Delete this order?');">
+                <button type="submit" class="text-red-600 hover:underline">Delete</button>
+              </form>
+            </td>
+          </tr>
+          {% else %}
+          <tr>
+            <td colspan="8" class="px-4 py-6 text-center text-gray-500">No orders found.</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Pagination -->
+    {% if pagination is defined %}
+    <div class="mt-4 flex items-center justify-between">
+      <div class="text-sm text-gray-600">
+        Page {{ pagination.page }} of {{ pagination.pages }} — {{ pagination.total }} orders
+      </div>
+      <div>
+        <nav class="inline-flex -space-x-px">
+          {% if pagination.has_prev %}
+            <a href="{{ url_for('admin_orders', page=1, per_page=per_page, **request.args.to_dict()) }}" class="px-3 py-1 border rounded-l">« First</a>
+            <a href="{{ url_for('admin_orders', page=pagination.prev_num, per_page=per_page, **request.args.to_dict()) }}" class="px-3 py-1 border">‹ Prev</a>
+          {% else %}
+            <span class="px-3 py-1 border rounded-l text-gray-400">« First</span>
+            <span class="px-3 py-1 border text-gray-400">‹ Prev</span>
+          {% endif %}
+          <span class="px-3 py-1 border bg-gray-50">{{ pagination.page }}</span>
+          {% if pagination.has_next %}
+            <a href="{{ url_for('admin_orders', page=pagination.next_num, per_page=per_page, **request.args.to_dict()) }}" class="px-3 py-1 border">Next ›</a>
+            <a href="{{ url_for('admin_orders', page=pagination.pages, per_page=per_page, **request.args.to_dict()) }}" class="px-3 py-1 border rounded-r">Last »</a>
+          {% else %}
+            <span class="px-3 py-1 border text-gray-400">Next ›</span>
+            <span class="px-3 py-1 border rounded-r text-gray-400">Last »</span>
+          {% endif %}
+        </nav>
+      </div>
+    </div>
+    {% endif %}
+
+  </main>
+</body>
+</html>

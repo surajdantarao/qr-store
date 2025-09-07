@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Track Order</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    body {
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+      background: #f9fafb;
+      margin: 0;
+      padding: 20px;
+      color: #111827;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    h2 {
+      font-size: 22px;
+      font-weight: 700;
+      color: #1f2937;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+    .card {
+      background: white;
+      border-radius: 14px;
+      padding: 24px;
+      max-width: 420px;
+      width: 100%;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+    }
+    .card p {
+      margin: 6px 0;
+      font-size: 15px;
+      color: #374151;
+    }
+    .label {
+      font-weight: 600;
+      color: #111827;
+    }
+    .steps {
+      margin-top: 18px;
+    }
+    .status-step {
+      display: flex;
+      align-items: center;
+      padding: 12px 14px;
+      margin-bottom: 10px;
+      border-radius: 10px;
+      font-size: 15px;
+      font-weight: 500;
+      transition: all 0.2s ease;
+    }
+    .status-step span {
+      margin-left: 8px;
+    }
+    .active {
+      background: #10b981;
+      color: white;
+    }
+    .inactive {
+      background: #f3f4f6;
+      color: #6b7280;
+    }
+  </style>
+</head>
+<body>
+  <h2>🚚 Track Your Order</h2>
+
+  <div class="card">
+    <p><span class="label">Store:</span> {{ order.seller.store_name }}</p>
+    <p><span class="label">Order ID:</span> #{{ order.id }}</p>
+    <p><span class="label">Phone:</span> {{ order.customer_phone }}</p>
+
+    <div class="steps">
+      <h3 style="font-size:16px; font-weight:600; margin-bottom:12px; color:#374151;">Status</h3>
+      <div class="status-step {{ 'active' if order.status == 'Pending' else 'inactive' }}">
+        🕒 <span>Pending</span>
+      </div>
+      <div class="status-step {{ 'active' if order.status == 'Accepted' else 'inactive' }}">
+        ✅ <span>Accepted</span>
+      </div>
+      <div class="status-step {{ 'active' if order.status == 'Out for Delivery' else 'inactive' }}">
+        📦 <span>Ready for Pickup / Delivery</span>
+      </div>
+      <div class="status-step {{ 'active' if order.status == 'Delivered' else 'inactive' }}">
+        🚚 <span>Delivered</span>
+      </div>
+      <div class="status-step {{ 'active' if order.status == 'Cancelled' else 'inactive' }}">
+        ❌ <span>Cancelled</span>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

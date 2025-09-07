@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>SmartDukaan — Home</title>
+
+  <!-- Tailwind -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root{
+      --brand-emerald: #10b981;
+      --brand-emerald-600: #059669;
+      --soft-bg: #f0fdf4;
+      --muted: #6b7280;
+    }
+    body { font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial; background: var(--soft-bg); color: #0f172a; }
+    :focus-visible { outline: 3px solid rgba(16,185,129,0.16); outline-offset: 2px; border-radius: 8px; }
+    .brand-bg { background-color: var(--brand-emerald); }
+    .brand-hover:hover { background-color: var(--brand-emerald-600); }
+    .line-clamp-2 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+  </style>
+</head>
+<body class="antialiased">
+
+  <!-- Top Info Bar -->
+  <div class="bg-emerald-700 text-white text-sm">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2 flex items-center justify-between">
+      <p class="flex items-center gap-2"><span class="text-lg">🧿</span> Zero setup • UPI-ready • Works on any phone</p>
+      <a href="#contact" class="underline hover:no-underline">Help?</a>
+    </div>
+  </div>
+
+  <!-- Navbar -->
+  <header class="bg-white/95 sticky top-0 z-50 border-b border-gray-200">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex h-16 items-center justify-between">
+        <a href="/" class="flex items-center gap-3">
+          <div class="h-10 w-10 rounded-xl brand-bg text-white flex items-center justify-center font-bold">SD</div>
+          <div>
+            <div class="text-lg font-extrabold tracking-tight">Smart<span class="text-emerald-700">Dukaan</span></div>
+            <div class="text-xs text-muted text-gray-500">QR ordering • Seller-first</div>
+          </div>
+        </a>
+
+        <nav class="hidden md:flex items-center gap-6">
+          <a href="/" class="text-stone-700 hover:text-emerald-700">Home</a>
+          <a href="#why" class="text-stone-700 hover:text-emerald-700">Why Us</a>
+          <a href="#how" class="text-stone-700 hover:text-emerald-700">Process</a>
+          <a href="#pricing" class="text-stone-700 hover:text-emerald-700">Pricing</a>
+          <a href="#faq" class="text-stone-700 hover:text-emerald-700">FAQ</a>
+          <a href="/register" class="px-4 py-2 rounded-xl brand-bg text-white font-medium brand-hover shadow">Register Seller</a>
+          <a href="/login" class="px-4 py-2 rounded-xl bg-white text-emerald-700 font-medium border border-emerald-100 hover:bg-emerald-50">Seller Login</a>
+        </nav>
+
+        <button id="menu-btn" class="md:hidden text-2xl text-emerald-700" aria-label="Toggle Menu">☰</button>
+      </div>
+    </div>
+
+    <!-- Mobile Menu -->
+    <div id="menu" class="md:hidden hidden border-t bg-white">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 space-y-3">
+        <a href="/" class="block">Home</a>
+        <a href="#why" class="block">Why Us</a>
+        <a href="#how" class="block">Process</a>
+        <a href="#pricing" class="block">Pricing</a>
+        <a href="#faq" class="block">FAQ</a>
+        <a href="/register" class="block px-3 py-2 rounded-lg bg-emerald-700 text-white">Register Seller</a>
+        <a href="/login" class="block px-3 py-2 rounded-lg bg-emerald-50 text-emerald-700 border border-emerald-100">Seller Login</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero -->
+  <section class="relative overflow-hidden">
+    <div class="absolute inset-0 -z-10 bg-gradient-to-b from-white to-emerald-50"></div>
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14 md:py-20 grid md:grid-cols-2 gap-10 items-center">
+      <div>
+        <h1 class="text-4xl md:text-5xl font-extrabold leading-tight tracking-tight">
+          Local <span class="text-emerald-700">Dukaandaar</span> ke liye banaya gaya
+        </h1>
+        <p class="mt-4 text-lg text-stone-700 max-w-xl">QR scan karo — customer order kare — seller dashboard se manage karo. Pickup & delivery dono supported. Simple, fast aur phone-friendly.</p>
+        <div class="mt-6 flex flex-col sm:flex-row gap-3">
+          <a href="/register" class="inline-flex items-center justify-center px-6 py-3 rounded-xl brand-bg text-white font-semibold hover:bg-emerald-600 shadow">
+            🚀 Register as Seller
+          </a>
+          <a href="/login" class="inline-flex items-center justify-center px-6 py-3 rounded-xl bg-white text-emerald-700 font-semibold border border-emerald-100 hover:bg-emerald-50">
+            🔑 Seller Login
+          </a>
+        </div>
+        <div class="mt-6 flex items-center gap-4 text-sm text-stone-700">
+          <div class="flex items-center gap-2"><span>🧾</span><span>No monthly fee</span></div>
+          <div class="flex items-center gap-2"><span>📦</span><span>Pickup & Delivery</span></div>
+          <div class="flex items-center gap-2"><span>📋</span><span>Orders in Dashboard</span></div>
+        </div>
+      </div>
+      <div class="relative">
+        <!-- replace file in static/images/hero.png -->
+        <img src="{{ url_for('static', filename='images/hero.png') }}" alt="QR Shop Mockup" class="rounded-2xl shadow-xl border border-emerald-100 object-cover w-full" />
+      </div>
+    </div>
+  </section>
+
+  <!-- Why Choose -->
+  <section id="why" class="py-14 md:py-20">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <h2 class="text-3xl md:text-4xl font-extrabold text-center">Why Choose SmartDukaan?</h2>
+      <p class="text-center text-stone-700 mt-3 max-w-2xl mx-auto">Bharat ke local dukaano ke liye simple, tez aur bharosemand system.</p>
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mt-10">
+        <div class="bg-white p-6 rounded-2xl shadow-sm border border-emerald-50 text-center hover:shadow-md">
+          <div class="text-4xl mb-2">🛒</div>
+          <h3 class="font-bold text-lg">Easy Ordering</h3>
+          <p class="text-stone-700">QR scan karke instant order placement.</p>
+        </div>
+        <div class="bg-white p-6 rounded-2xl shadow-sm border border-emerald-50 text-center hover:shadow-md">
+          <div class="text-4xl mb-2">📱</div>
+          <h3 class="font-bold text-lg">Seller Dashboard</h3>
+          <p class="text-stone-700">Products aur orders ek jagah manage karein.</p>
+        </div>
+        <div class="bg-white p-6 rounded-2xl shadow-sm border border-emerald-50 text-center hover:shadow-md">
+          <div class="text-4xl mb-2">🚚</div>
+          <h3 class="font-bold text-lg">Pickup & Delivery</h3>
+          <p class="text-stone-700">Customer ko flexible options.</p>
+        </div>
+        <div class="bg-white p-6 rounded-2xl shadow-sm border border-emerald-50 text-center hover:shadow-md">
+          <div class="text-4xl mb-2">💸</div>
+          <h3 class="font-bold text-lg">Zero Hassle</h3>
+          <p class="text-stone-700">No setup cost • Instant dukaan.</p>
+        </div>
+      </div>
+
+      <!-- Trust / Stats -->
+      <div class="mt-10 grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
+        <div class="bg-white rounded-2xl p-5 border border-emerald-50 shadow-sm"><p class="text-3xl font-extrabold text-emerald-700">5 min</p><p class="text-stone-700 text-sm">mein shuru</p></div>
+        <div class="bg-white rounded-2xl p-5 border border-emerald-50 shadow-sm"><p class="text-3xl font-extrabold text-emerald-700">0₹</p><p class="text-stone-700 text-sm">setup fee</p></div>
+        <div class="bg-white rounded-2xl p-5 border border-emerald-50 shadow-sm"><p class="text-3xl font-extrabold text-emerald-700">UPI</p><p class="text-stone-700 text-sm">payments ready</p></div>
+        <div class="bg-white rounded-2xl p-5 border border-emerald-50 shadow-sm"><p class="text-3xl font-extrabold text-emerald-700">24×7</p><p class="text-stone-700 text-sm">self-serve</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- How it works -->
+  <section id="how" class="bg-white/60 py-14 md:py-20">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <h2 class="text-3xl md:text-4xl font-extrabold text-center">Process</h2>
+      <div class="grid md:grid-cols-4 gap-6 mt-10">
+        <div class="bg-white rounded-2xl p-6 shadow-sm border border-emerald-50 text-center hover:shadow-md">
+          <span class="text-4xl">1️⃣</span>
+          <p class="mt-2 font-medium">Register Your Shop</p>
+          <p class="text-sm text-stone-700">Basic details bharen</p>
+        </div>
+        <div class="bg-white rounded-2xl p-6 shadow-sm border border-emerald-50 text-center hover:shadow-md">
+          <span class="text-4xl">2️⃣</span>
+          <p class="mt-2 font-medium">Get Unique QR</p>
+          <p class="text-sm text-stone-700">QR print karke lagayein</p>
+        </div>
+        <div class="bg-white rounded-2xl p-6 shadow-sm border border-emerald-50 text-center hover:shadow-md">
+          <span class="text-4xl">3️⃣</span>
+          <p class="mt-2 font-medium">Customer Scans & Orders</p>
+          <p class="text-sm text-stone-700">Pickup/Delivery choose karein</p>
+        </div>
+        <div class="bg-white rounded-2xl p-6 shadow-sm border border-emerald-50 text-center hover:shadow-md">
+          <span class="text-4xl">4️⃣</span>
+          <p class="mt-2 font-medium">Manage in Dashboard</p>
+          <p class="text-sm text-stone-700">Orders track karein</p>
+        </div>
+      </div>
+
+      <div class="text-center mt-8">
+        <a href="/register" class="inline-flex items-center justify-center px-6 py-3 rounded-xl brand-bg text-white font-semibold hover:bg-emerald-600 shadow">Start Free</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Pricing -->
+  <section id="pricing" class="py-14 md:py-20">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <h2 class="text-3xl md:text-4xl font-extrabold text-center">Simple Pricing</h2>
+      <p class="text-center text-stone-700 mt-3">Start free. Pay only when you grow. (Customisable)</p>
+      <div class="mt-10 grid md:grid-cols-3 gap-6">
+        <div class="bg-white rounded-2xl border border-emerald-50 p-6 shadow-sm">
+          <h3 class="text-xl font-bold">Starter</h3>
+          <p class="text-sm text-stone-700">Best for new shops</p>
+          <p class="mt-4 text-3xl font-extrabold text-emerald-700">₹0</p>
+          <ul class="mt-4 space-y-2 text-sm text-stone-800">
+            <li>• QR ordering</li>
+            <li>• Pickup & Delivery</li>
+            <li>• Seller dashboard</li>
+          </ul>
+          <a href="/register" class="mt-6 inline-flex w-full justify-center px-4 py-2 rounded-xl brand-bg text-white font-medium hover:bg-emerald-600">Get Started</a>
+        </div>
+        <div class="bg-white rounded-2xl border-2 border-emerald-700 p-6 shadow-md">
+          <h3 class="text-xl font-bold">Growth</h3>
+          <p class="text-sm text-stone-700">For busy stores</p>
+          <p class="mt-4 text-3xl font-extrabold">₹—</p>
+          <ul class="mt-4 space-y-2 text-sm text-stone-800">
+            <li>• Priority support</li>
+            <li>• Advanced reports</li>
+            <li>• Multi-staff access</li>
+          </ul>
+          <a href="/register" class="mt-6 inline-flex w-full justify-center px-4 py-2 rounded-xl brand-bg text-white font-medium hover:bg-emerald-600">Try Free</a>
+        </div>
+        <div class="bg-white rounded-2xl p-6 shadow-sm border border-emerald-50">
+          <h3 class="text-xl font-bold">Enterprise</h3>
+          <p class="text-sm text-stone-700">Multi-branch & chains</p>
+          <p class="mt-4 text-3xl font-extrabold">Custom</p>
+          <ul class="mt-4 space-y-2 text-sm text-stone-800">
+            <li>• Dedicated manager</li>
+            <li>• API & integrations</li>
+            <li>• SLA support</li>
+          </ul>
+          <a href="#contact" class="mt-6 inline-flex w-full justify-center px-4 py-2 rounded-xl bg-white border border-emerald-100 text-emerald-700 hover:bg-emerald-50">Talk to us</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Testimonials -->
+  <section class="bg-white py-14 md:py-20">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <h2 class="text-3xl md:text-4xl font-extrabold text-center">Dukaandaron ki suno</h2>
+      <div class="mt-10 grid md:grid-cols-3 gap-6">
+        <figure class="bg-emerald-50 border border-emerald-100 rounded-2xl p-6 shadow-sm">
+          <blockquote class="text-stone-900">“QR lagaya aur manages & delivery dono simple.”</blockquote>
+          <figcaption class="mt-4 text-sm text-stone-700">— Grocer, Pune</figcaption>
+        </figure>
+        <figure class="bg-emerald-50 border border-emerald-100 rounded-2xl p-6 shadow-sm">
+          <blockquote class="text-stone-900">“Inventory add karna asaan, aur customer ko options clear.”</blockquote>
+          <figcaption class="mt-4 text-sm text-stone-700">— Dairy, Nagpur</figcaption>
+        </figure>
+        <figure class="bg-emerald-50 border border-emerald-100 rounded-2xl p-6 shadow-sm">
+          <blockquote class="text-stone-900">“Cash/UPI dono chal jata, delivery charges bhi auto.”</blockquote>
+          <figcaption class="mt-4 text-sm text-stone-700">— Kirana, Nashik</figcaption>
+        </figure>
+      </div>
+    </div>
+  </section>
+
+  <!-- About -->
+  <section id="about" class="py-14 md:py-20 bg-emerald-50">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+      <h2 class="text-3xl md:text-4xl font-extrabold mb-4">About SmartDukaan</h2>
+      <p class="text-lg text-stone-700">SmartDukaan local shopkeepers ko online laane ke liye bana hua ek simple QR system hai. Customer asaani se order kar sakte hain, aur seller ek clean dashboard se sab manage kar sakta hai.</p>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section id="faq" class="py-14 md:py-20">
+    <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+      <h2 class="text-3xl md:text-4xl font-extrabold text-center">Questions? Humare paas answers hai.</h2>
+      <div class="mt-8 space-y-3" id="faq-list">
+        <details class="group bg-white border border-emerald-50 rounded-2xl p-5 open:shadow-sm">
+          <summary class="cursor-pointer font-semibold flex items-center justify-between">Kya app install karna padega?<span class="ml-2 text-xl group-open:rotate-180 transition">⌄</span></summary>
+          <p class="mt-3 text-stone-800">Nahi. QR scan se web par hi order hota hai. Seller dashboard bhi browser me.</p>
+        </details>
+        <details class="group bg-white border border-emerald-50 rounded-2xl p-5">
+          <summary class="cursor-pointer font-semibold flex items-center justify-between">Payment kaise hota hai?<span class="ml-2 text-xl group-open:rotate-180 transition">⌄</span></summary>
+          <p class="mt-3 text-stone-800">UPI/Cash dono support. Aap apna UPI ID daal sakte ho.</p>
+        </details>
+        <details class="group bg-white border border-emerald-50 rounded-2xl p-5">
+          <summary class="cursor-pointer font-semibold flex items-center justify-between">Delivery charges auto lagte hai?<span class="ml-2 text-xl group-open:rotate-180 transition">⌄</span></summary>
+          <p class="mt-3 text-stone-800">Haan, aapke rules ke hisaab se percentage ya flat fee lag sakti hai.</p>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <!-- Contact -->
+  <section id="contact" class="py-14 md:py-20 bg-emerald-50">
+    <div class="max-w-xl mx-auto px-4 sm:px-6 lg:px-8">
+      <h2 class="text-3xl md:text-4xl font-extrabold text-center">Contact Us</h2>
+      <div class="mt-8 bg-white p-6 rounded-2xl shadow-sm border border-emerald-50 space-y-4 text-center">
+        <p class="text-stone-800 text-lg">Get in touch with us:</p>
+        <p><strong>📞 Phone:</strong> +91 87677 53086</p>
+        <p><strong>📧 Email:</strong> support@smartdukaan.com</p>
+        <p><strong>📍 Address:</strong> Pune, Maharashtra, India</p>
+        <div class="flex items-center justify-center gap-3 pt-2">
+          <a href="tel:+918767753086" class="px-4 py-2 rounded-xl brand-bg text-white hover:bg-emerald-600">Call Now</a>
+          <a href="mailto:support@smartdukaan.com" class="px-4 py-2 rounded-xl bg-white border border-emerald-50 text-emerald-700">Email</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="text-center py-16 bg-emerald-100">
+    <h2 class="text-3xl md:text-4xl font-extrabold mb-2">Apni Dukaan Online Lao! 🚀</h2>
+    <p class="mb-6 text-stone-900 text-lg">SmartDukaan ke sath free QR aur order management shuru karein.</p>
+    <a href="/register" class="bg-emerald-700 text-white px-8 py-3 rounded-xl font-semibold hover:bg-emerald-600 shadow-lg">Register Now</a>
+  </section>
+
+  <!-- Footer -->
+  <footer class="bg-emerald-900 text-emerald-100">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 grid md:grid-cols-3 gap-6">
+      <div>
+        <div class="text-2xl font-extrabold">Smart<span class="text-white">Dukaan</span></div>
+        <p class="mt-3 text-sm">© 2025 SmartDukaan. All rights reserved.</p>
+      </div>
+      <div>
+        <h4 class="font-semibold">Links</h4>
+        <ul class="mt-3 space-y-2 text-sm">
+          <li><a href="#why" class="hover:text-white">Why Us</a></li>
+          <li><a href="#how" class="hover:text-white">How it Works</a></li>
+          <li><a href="#pricing" class="hover:text-white">Pricing</a></li>
+          <li><a href="#faq" class="hover:text-white">FAQ</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4 class="font-semibold">Get Started</h4>
+        <div class="mt-3 flex gap-3">
+          <a href="/register" class="px-4 py-2 rounded-xl brand-bg text-white">Register</a>
+          <a href="/login" class="px-4 py-2 rounded-xl bg-white text-emerald-700">Login</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Sticky bottom bar (mobile) -->
+  <div class="md:hidden fixed bottom-0 inset-x-0 z-50 bg-white/95 backdrop-blur border-t border-emerald-100 p-3 flex items-center justify-between">
+    <div>
+      <p class="font-semibold text-sm">Start in 5 minutes</p>
+      <p class="text-xs text-stone-600">QR se orders • Pickup & Delivery</p>
+    </div>
+    <div class="flex gap-2">
+      <a href="/login" class="px-3 py-2 rounded-lg bg-white border border-emerald-100 text-emerald-700">Login</a>
+      <a href="/register" class="px-3 py-2 rounded-lg brand-bg text-white">Register</a>
+    </div>
+  </div>
+
+  <!-- Floating Action Button -->
+  <a href="#contact" class="fixed bottom-20 right-5 inline-flex items-center justify-center w-14 h-14 rounded-full shadow-lg bg-emerald-700 text-white text-2xl hover:bg-emerald-600" aria-label="Contact">✉️</a>
+
+  <script>
+    // Mobile menu toggle
+    const btn = document.getElementById('menu-btn');
+    const menu = document.getElementById('menu');
+    if (btn && menu) btn.addEventListener('click', () => menu.classList.toggle('hidden'));
+
+    // Accessible details toggles
+    document.querySelectorAll('details summary').forEach(s => {
+      s.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); s.parentElement.open = !s.parentElement.open; }
+      });
+    });
+  </script>
+</body>
+</html>

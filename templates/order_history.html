@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Order History</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 text-gray-800">
+  <div class="max-w-6xl mx-auto px-4 py-6">
+    <h1 class="text-2xl md:text-3xl font-bold text-center mb-6">📜 Order History</h1>
+
+    {% for date, orders in grouped_orders %}
+      <!-- Date header -->
+      <section class="mb-8">
+        <h2 class="sticky top-0 z-10 bg-emerald-600 text-white text-sm md:text-base font-semibold px-4 py-2 rounded-lg shadow">
+          {{ date }}
+        </h2>
+
+        <!-- Order cards grid -->
+        <div class="mt-3 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {% for order in orders %}
+          <article class="bg-white rounded-2xl border shadow-sm hover:shadow-md transition">
+            <div class="p-4">
+              <div class="flex items-start justify-between gap-3">
+                <div>
+                  <p class="text-sm text-gray-500">Order ID</p>
+                  <p class="text-lg font-semibold">#{{ order.id }}</p>
+                </div>
+
+                <!-- Status badge -->
+                <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium
+                  {% if order.status == 'Delivered' %} bg-emerald-50 text-emerald-700 border border-emerald-200
+                  {% elif order.status == 'Cancelled' %} bg-red-50 text-red-700 border border-red-200
+                  {% elif order.status == 'Out for Delivery' %} bg-indigo-50 text-indigo-700 border border-indigo-200
+                  {% elif order.status == 'Accepted' %} bg-amber-50 text-amber-700 border border-amber-200
+                  {% else %} bg-gray-100 text-gray-700 border border-gray-200 {% endif %}">
+                  {{ order.status }}
+                </span>
+              </div>
+
+              <div class="mt-3 text-sm">
+                <p><span class="text-gray-500">Phone:</span> {{ order.customer_phone }}</p>
+                {% if order.customer_address %}
+                  <p class="mt-1"><span class="text-gray-500">Address:</span> {{ order.customer_address }}</p>
+                {% endif %}
+                {% if order.delivery_mode %}
+                  <p class="mt-1"><span class="text-gray-500">Delivery:</span> {{ order.delivery_mode }}</p>
+                {% endif %}
+                {% if order.total_amount is defined %}
+                  <p class="mt-1"><span class="text-gray-500">Total:</span> ₹{{ order.total_amount }}</p>
+                {% endif %}
+              </div>
+
+              <!-- Time row -->
+              <div class="mt-3 text-xs text-gray-500 flex items-center gap-2">
+                <span>🕒</span>
+                <span>{{ order.created_at.strftime("%I:%M %p") }}</span>
+              </div>
+
+              <!-- Optional: items list (shown only if available) -->
+              {% if order.items %}
+                <details class="mt-3 group">
+                  <summary class="cursor-pointer text-sm text-emerald-700 hover:text-emerald-800">
+                    View items
+                  </summary>
+                  <ul class="mt-2 space-y-1 text-sm text-gray-700 list-disc list-inside">
+                    {% for item in order.items %}
+                      <li>
+                        {{ item.product_name }}
+                        {% if item.unit_price is defined %}- ₹{{ item.unit_price }}{% endif %}
+                        {% if item.quantity is defined %} × {{ item.quantity }}{% endif %}
+                        {% if item.unit %} <span class="text-gray-500 text-xs">({{ item.unit }})</span>{% endif %}
+                      </li>
+                    {% endfor %}
+                  </ul>
+                </details>
+              {% endif %}
+            </div>
+          </article>
+          {% endfor %}
+        </div>
+      </section>
+    {% endfor %}
+  </div>
+</body>
+</html>

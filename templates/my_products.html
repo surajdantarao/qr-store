@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>My Products</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 text-gray-800">
+  <div class="max-w-6xl mx-auto px-4 py-6">
+    <div class="flex items-center justify-between mb-6">
+      <h2 class="text-2xl md:text-3xl font-bold">📦 My Products</h2>
+
+      <!-- Optional quick search (client-side only) -->
+      <input id="searchBox" type="text" placeholder="Search products…"
+             class="w-64 max-w-full rounded-lg border-gray-300 focus:ring-emerald-500 focus:border-emerald-500 px-3 py-2 text-sm">
+    </div>
+
+    {% if products %}
+    <div id="gridWrap" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+      {% for product in products %}
+      <div class="bg-white rounded-2xl border p-4 shadow-sm hover:shadow-md transition"
+           data-name="{{ product.product_name|lower }}">
+        <!-- Image -->
+        <div class="w-full h-40 rounded-xl overflow-hidden border bg-gray-100">
+          {% if product.image_url %}
+            {% if product.image_url.startswith('http') %}
+              <img src="{{ product.image_url }}" alt="Product Image" class="w-full h-full object-cover">
+            {% else %}
+              <img src="{{ url_for('static', filename=product.image_url) }}" alt="Product Image" class="w-full h-full object-cover">
+            {% endif %}
+          {% else %}
+            <div class="w-full h-full flex items-center justify-center text-sm text-gray-500">
+              No Image
+            </div>
+          {% endif %}
+        </div>
+
+        <!-- Info -->
+        <div class="mt-4">
+          <div class="flex items-start justify-between gap-2">
+            <strong class="text-lg">{{ product.product_name }}</strong>
+            <span class="text-emerald-700 font-semibold">₹{{ product.price }}</span>
+          </div>
+          <div class="text-sm text-gray-600 mt-1">Unit: {{ product.unit or 'N/A' }}</div>
+        </div>
+
+        <!-- Actions -->
+        <div class="mt-4 flex items-center gap-2">
+          <form method="GET" action="{{ url_for('edit_product', product_id=product.id) }}" class="inline">
+            <button type="submit"
+              class="px-3 py-2 rounded-lg text-sm bg-blue-600 hover:bg-blue-700 text-white">
+              Edit
+            </button>
+          </form>
+
+          <form method="POST" action="{{ url_for('delete_product', product_id=product.id) }}" class="inline"
+                onsubmit="return confirm('Are you sure you want to delete this product?')">
+            <button type="submit"
+              class="px-3 py-2 rounded-lg text-sm bg-red-600 hover:bg-red-700 text-white">
+              Delete
+            </button>
+          </form>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    {% else %}
+      <div class="bg-white border rounded-2xl p-8 text-center text-gray-600">
+        No products found.
+      </div>
+    {% endif %}
+  </div>
+
+  <script>
+    // Simple client-side search by product name (no backend change)
+    const searchBox = document.getElementById('searchBox');
+    const cards = document.querySelectorAll('#gridWrap > div[data-name]');
+    if (searchBox) {
+      searchBox.addEventListener('input', (e) => {
+        const q = e.target.value.trim().toLowerCase();
+        cards.forEach(c => {
+          const name = c.getAttribute('data-name') || '';
+          c.style.display = name.includes(q) ? '' : 'none';
+        });
+      });
+    }
+  </script>
+</body>
+</html>

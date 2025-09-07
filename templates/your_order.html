@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Your Order - {{ store_name }}</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    :root{
+      --bg:#f7f8fa;
+      --card:#ffffff;
+      --border:#e6e8ee;
+      --text:#1f2937;
+      --muted:#6b7280;
+      --primary:#10b981; /* green */
+      --primary-dark:#0ea371;
+      --danger:#d9534f;
+      --shadow:0 6px 20px rgba(0,0,0,.06);
+      --radius:14px;
+    }
+    *{box-sizing:border-box}
+    html,body{margin:0;padding:0}
+    body{
+      font-family:system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, 'Helvetica Neue', Arial, 'Noto Sans', 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol';
+      color:var(--text);
+      background:var(--bg);
+      line-height:1.5;
+    }
+
+    .wrap{
+      max-width:960px;
+      margin:24px auto;
+      padding:16px;
+    }
+
+    .page-title{
+      font-size:clamp(20px, 4vw, 28px);
+      margin:0 0 18px;
+      font-weight:800;
+      letter-spacing:.3px;
+    }
+
+    /* Layout: summary + form */
+    .layout{
+      display:grid;
+      grid-template-columns:1fr;
+      gap:16px;
+    }
+    @media (min-width: 880px){
+      .layout{
+        grid-template-columns: 1fr 1fr;
+        gap:22px;
+      }
+    }
+
+    .card{
+      background:var(--card);
+      border:1px solid var(--border);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      padding:18px;
+    }
+
+    .section-title{
+      margin:0 0 12px;
+      font-size:18px;
+      font-weight:700;
+    }
+
+    /* Order Summary */
+    .items{
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+      margin:10px 0 14px;
+    }
+    .item{
+      display:flex;
+      justify-content:space-between;
+      gap:12px;
+      padding:10px 12px;
+      border:1px dashed var(--border);
+      border-radius:10px;
+      background:#fafafa;
+    }
+    .item-name{font-weight:600}
+    .item-sub{color:var(--muted);font-size:13px}
+
+    .row-total{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      padding:12px 0 0;
+      margin-top:8px;
+      border-top:1px solid var(--border);
+      font-weight:800;
+      font-size:18px;
+      color:#059669;
+    }
+
+    .note{
+      margin-top:14px;
+      padding:12px;
+      background:#f3faf7;
+      border:1px solid #d7f0e6;
+      border-radius:10px;
+      color:#065f46;
+      font-size:14px;
+    }
+
+    /* Delivery charge / final total boxes */
+    #delivery-charge-box,
+    #final-total-box{
+      margin-top:10px;
+      padding:10px 12px;
+      border-radius:10px;
+      border:1px solid var(--border);
+      background:#fff7ed;
+      color:#b45309;
+      font-weight:700;
+    }
+    #final-total-box{
+      background:#ecfdf5;
+      color:#065f46;
+    }
+
+    /* Info box */
+    .info-grid{
+      display:grid;
+      grid-template-columns:1fr;
+      gap:8px;
+      font-size:14px;
+      color:var(--muted);
+    }
+    .info-item b{color:#374151}
+
+    /* Form */
+    form{
+      display:flex;
+      flex-direction:column;
+      gap:14px;
+    }
+    .field{
+      display:flex;
+      flex-direction:column;
+      gap:6px;
+    }
+    label{font-weight:600}
+    input[type="text"],
+    textarea{
+      width:100%;
+      padding:12px 14px;
+      border:1px solid var(--border);
+      border-radius:10px;
+      outline:none;
+      background:#fff;
+      transition:border .15s ease, box-shadow .15s ease;
+      font-size:15px;
+    }
+    input[type="text"]:focus,
+    textarea:focus{
+      border-color:#9ae6b4;
+      box-shadow:0 0 0 4px rgba(16,185,129,.12);
+    }
+    textarea{resize:vertical; min-height:100px}
+
+    .radio-group{
+      display:grid;
+      grid-template-columns:1fr;
+      gap:10px;
+    }
+    .radio{
+      display:flex; align-items:center; gap:10px;
+      padding:10px 12px; border:1px solid var(--border); border-radius:12px;
+      background:#fff;
+    }
+    .hint{
+      font-size:12px; color:var(--muted);
+    }
+
+    button[type="submit"]{
+      background:var(--primary);
+      color:#fff;
+      padding:12px 16px;
+      font-size:16px;
+      border:none;
+      border-radius:12px;
+      cursor:pointer;
+      font-weight:700;
+      letter-spacing:.2px;
+      transition:transform .05s ease, background .2s ease, box-shadow .2s ease;
+      box-shadow:0 8px 18px rgba(16,185,129,.18);
+    }
+    button[type="submit"]:hover{ background:var(--primary-dark) }
+    button[type="submit"]:active{ transform:translateY(1px) }
+
+    /* Make summary sticky on desktop for nice UX */
+    @media (min-width: 880px){
+      .sticky{
+        position:sticky;
+        top:16px;
+      }
+    }
+
+    /* Small helpers */
+    .muted{ color:var(--muted) }
+    .store{ color:#111827; font-weight:800 }
+  </style>
+</head>
+<body>
+
+  <div class="wrap">
+    <h2 class="page-title">Your Order for <span class="store">{{ store_name }}</span></h2>
+
+    <div class="layout">
+      <!-- LEFT: Order Summary -->
+      <section class="card sticky">
+        <h3 class="section-title">🧾 Order Summary</h3>
+
+        <div class="items">
+          {% for item in items %}
+          <div class="item">
+            <div>
+              <div class="item-name">{{ item.name }}</div>
+              <div class="item-sub">Qty: {{ item.quantity }}</div>
+            </div>
+            <div>₹{{ item.subtotal }}</div>
+          </div>
+          {% endfor %}
+        </div>
+
+        <div class="row-total">
+          <span>Total</span>
+          <span>₹<span id="base-total">{{ total }}</span></span>
+        </div>
+
+        <div id="delivery-charge-box" style="display:none;">
+          Delivery Charge: ₹<span id="delivery-charge">0</span>
+        </div>
+
+        <div class="row-total" id="final-total-box" style="display:none;">
+          <span>Final Total</span>
+          <span>₹<span id="final-total">{{ total }}</span></span>
+        </div>
+
+        <div class="note">
+          Tip: Delivery is enabled for orders ₹100 and above. Charges are auto-calculated if you select delivery.
+        </div>
+      </section>
+
+      <!-- RIGHT: Info + Form -->
+      <section class="card">
+        <h3 class="section-title">📦 Delivery & Contact</h3>
+
+        <div class="info-grid">
+          <div class="info-item"><b>Delivery Type:</b> Choose Pickup or Delivery</div>
+          <div class="info-item"><b>Contact:</b> Enter a valid 10-digit phone</div>
+          <div class="info-item"><b>Payment:</b> Cash/Card/UPI at delivery or pickup (COD)</div>
+        </div>
+
+        <form action="{{ url_for('submit_order') }}" method="POST" onsubmit="return validateForm()">
+          <!-- Hidden fields (unchanged) -->
+          <!-- Hidden fields -->
+            <input type="hidden" name="slug" value="{{ slug }}">
+            <input type="hidden" name="items_json" value='{{ items | tojson | safe }}'>
+            <input type="hidden" name="total_price" id="hidden-final-total" value="{{ total }}">
+
+
+          <!-- Delivery type -->
+          <div class="field">
+            <label>Delivery Type</label>
+            <div class="radio-group">
+              <label class="radio">
+                <input type="radio" name="delivery_type" value="pickup" required>
+                <span>Pickup Byself</span>
+              </label>
+              <label class="radio">
+                <input type="radio" name="delivery_type" value="delivery" required id="delivery-option">
+                <span>Delivery</span>
+              </label>
+            </div>
+            <div class="hint">Delivery available only for orders ₹100 and above.</div>
+          </div>
+
+          <!-- Phone -->
+          <div class="field">
+            <label for="phone">Phone Number</label>
+            <input
+              type="text"
+              name="phone"
+              id="phone"
+              required
+              maxlength="10"
+              minlength="10"
+              pattern="\d{10}"
+              title="Enter valid 10-digit phone number"
+              placeholder="e.g. 9876543210"
+            >
+          </div>
+
+          <!-- Address -->
+          <div class="field">
+            <label for="address">Address (if delivery)</label>
+            <textarea
+              name="address"
+              id="address"
+              rows="3"
+              placeholder="House/Flat, Street, Landmark, City"
+            ></textarea>
+          </div>
+
+          <button type="submit">Confirm Order</button>
+        </form>
+      </section>
+    </div>
+  </div>
+
+  <!-- ---------- JS (unchanged logic) ---------- -->
+  <script>
+    const total = parseFloat(document.getElementById("base-total").textContent);
+    const deliveryOption = document.getElementById("delivery-option");
+    const deliveryChargeBox = document.getElementById("delivery-charge-box");
+    const deliveryChargeSpan = document.getElementById("delivery-charge");
+    const finalTotalBox = document.getElementById("final-total-box");
+    const finalTotalSpan = document.getElementById("final-total");
+    const hiddenFinalTotal = document.getElementById("hidden-final-total");
+    const addressBox = document.getElementById("address");
+
+    if (total < 100) {
+      deliveryOption.disabled = true;
+      deliveryOption.title = "Delivery available only for orders ₹100 and above.";
+    }
+
+    function calculateDeliveryCharge() {
+      let charge = 0;
+      if (total >= 100 && total < 500) {
+        charge = Math.round(total * 0.10);
+      } else if (total >= 500) {
+        charge = Math.round(total * 0.05);
+      }
+      return charge;
+    }
+
+    function updateFinalTotalView() {
+      const deliverySelected = document.querySelector('input[name="delivery_type"]:checked')?.value === "delivery";
+
+      if (deliverySelected && total >= 100) {
+        const deliveryCharge = calculateDeliveryCharge();
+        deliveryChargeBox.style.display = "block";
+        finalTotalBox.style.display = "block";
+        deliveryChargeSpan.textContent = deliveryCharge;
+        finalTotalSpan.textContent = total + deliveryCharge;
+        hiddenFinalTotal.value = total + deliveryCharge;
+      } else {
+        deliveryChargeBox.style.display = "none";
+        finalTotalBox.style.display = "none";
+        deliveryChargeSpan.textContent = "0";
+        finalTotalSpan.textContent = total;
+        hiddenFinalTotal.value = total;
+      }
+
+      addressBox.required = deliverySelected;
+    }
+
+    document.querySelectorAll('input[name="delivery_type"]').forEach(radio => {
+      radio.addEventListener("change", updateFinalTotalView);
+    });
+
+    function validateForm() {
+      const phone = document.getElementById("phone").value.trim();
+      const invalidNumbers = [
+        "1234567890","9999999999","8888888888","7777777777",
+        "6666666666","5555555555","4444444444","3333333333",
+        "2222222222","1111111111","0000000000"
+      ];
+      if (invalidNumbers.includes(phone)) {
+        alert("Please enter a valid phone number.");
+        return false;
+      }
+
+      const deliverySelected = document.querySelector('input[name="delivery_type"]:checked')?.value === "delivery";
+      const address = addressBox.value.trim();
+
+      if (deliverySelected && address.length < 5) {
+        alert("Please enter a valid address for delivery.");
+        return false;
+      }
+      return true;
+    }
+  </script>
+</body>
+</html>

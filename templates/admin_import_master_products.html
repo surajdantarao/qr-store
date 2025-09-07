@@ -1,0 +1,76 @@
+{% extends "admin_base.html" %}
+
+{% block title %}Import Master Products{% endblock %}
+
+{% block content %}
+<div class="container py-3">
+
+  <div class="d-flex align-items-center mb-3">
+    <h2 class="m-0">Import Master Products</h2>
+  </div>
+
+  {# Flash messages #}
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      <div class="mb-3">
+        {% for category, message in messages %}
+          <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+          </div>
+        {% endfor %}
+      </div>
+    {% endif %}
+  {% endwith %}
+
+  <div class="card shadow-sm">
+    <div class="card-body">
+      <form method="POST" action="{{ url_for('admin_import_master_products') }}" enctype="multipart/form-data" id="importForm">
+        <div class="mb-3">
+          <label for="file" class="form-label">Select CSV file</label>
+          <input type="file" name="file" id="file" class="form-control" accept=".csv" required>
+          <div class="form-text">
+            Only .csv files are supported.
+          </div>
+        </div>
+
+        <button type="submit" class="btn btn-success" id="submitBtn">
+          <span class="me-2" id="btnText">Upload and Import</span>
+          <span class="spinner-border spinner-border-sm d-none" id="btnSpinner" role="status" aria-hidden="true"></span>
+        </button>
+        <a href="{{ url_for('admin_master_products') }}" class="btn btn-outline-secondary ms-2">Back to Master Products</a>
+      </form>
+    </div>
+
+    <div class="card-footer bg-light">
+      <div class="small text-muted mb-1">CSV must contain these exact column headers:</div>
+      <code>Product, Brands, Unit, Image URL</code>
+      <ul class="small text-muted mt-2 mb-0">
+        <li><strong>Product</strong>: name of the product (required)</li>
+        <li><strong>Brands</strong>: e.g., “Unbranded, local brands” (used as category)</li>
+        <li><strong>Unit</strong>: e.g., <em>kg</em>, <em>g</em>, <em>pcs</em></li>
+        <li><strong>Image URL</strong>: http/https URL or leave blank</li>
+      </ul>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  // Basic submit guard + visual feedback
+  (function () {
+    const form = document.getElementById('importForm');
+    const btn = document.getElementById('submitBtn');
+    const txt = document.getElementById('btnText');
+    const spn = document.getElementById('btnSpinner');
+
+    if (form && btn) {
+      form.addEventListener('submit', function () {
+        btn.disabled = true;
+        spn.classList.remove('d-none');
+        txt.textContent = 'Importing...';
+      });
+    }
+  })();
+</script>
+{% endblock %}

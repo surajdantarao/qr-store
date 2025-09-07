@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Seller Dashboard - Orders</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 16px;
+      background: #f9fafb;
+      color: #333;
+    }
+    h1 {
+      font-size: 24px;
+      margin-bottom: 16px;
+    }
+    .table-wrapper {
+      overflow-x: auto; /* enable scroll on small screens */
+      background: #fff;
+      border-radius: 8px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      min-width: 750px; /* keeps table readable */
+    }
+    th, td {
+      border: 1px solid #e5e7eb;
+      padding: 12px;
+      text-align: left;
+      vertical-align: top;
+      font-size: 14px;
+    }
+    th {
+      background-color: #f3f4f6;
+      font-weight: 600;
+    }
+    ul {
+      margin: 0;
+      padding-left: 16px;
+    }
+    li {
+      margin-bottom: 4px;
+    }
+    .item-unit {
+      color: #666;
+      font-size: 13px;
+    }
+    select, button {
+      padding: 6px 10px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      font-size: 14px;
+      cursor: pointer;
+    }
+    button {
+      background: #10b981;
+      color: #fff;
+      border: none;
+      margin-top: 4px;
+    }
+    button:hover {
+      background: #059669;
+    }
+    .danger-btn {
+      background: #ef4444;
+    }
+    .danger-btn:hover {
+      background: #dc2626;
+    }
+
+    /* Mobile adjustments */
+    @media (max-width: 600px) {
+      h1 { font-size: 20px; }
+      th, td { padding: 8px; font-size: 13px; }
+      button, select { font-size: 12px; padding: 5px 8px; }
+    }
+  </style>
+</head>
+<body>
+  <h1>Orders for {{ store_name }}</h1>
+
+  <div class="table-wrapper">
+    <table>
+      <thead>
+        <tr>
+          <th>Order ID</th>
+          <th>Items</th>
+          <th>Delivery Type</th>
+          <th>Phone</th>
+          <th>Address</th>
+          <th>Total Price</th>
+          <th>Status</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for order in orders %}
+        <tr>
+          <td>{{ order.id }}</td>
+          <td>
+            <ul>
+              {% for item in order.items %}
+                <li>
+                  {{ item.product_name }}  
+                  - ₹{{ item.unit_price }} × {{ item.quantity }}
+                  <span class="item-unit">{{ item.unit if item.unit else '' }}</span>
+                </li>
+              {% endfor %}
+            </ul>
+          </td>
+          <td>{{ order.delivery_mode }}</td>
+          <td>{{ order.customer_phone }}</td>
+          <td>{{ order.customer_address or '—' }}</td>
+          <td>₹{{ order.total_amount }}</td>
+          <td><strong>{{ order.status }}</strong></td>
+          <td>
+            <!-- Status Update Form -->
+            <form method="POST" action="/update_order_status" style="margin-bottom:6px;">
+              <input type="hidden" name="order_id" value="{{ order.id }}">
+              <select name="new_status">
+                {% for status in ['Pending', 'Accepted', 'Out for Delivery', 'Delivered', 'Cancelled'] %}
+                  <option value="{{ status }}" {% if order.status == status %}selected{% endif %}>{{ status }}</option>
+                {% endfor %}
+              </select>
+              <button type="submit">Update</button>
+            </form>
+
+            <!-- Clear Order Form -->
+            <form method="POST" action="{{ url_for('clear_order') }}">
+              <input type="hidden" name="order_id" value="{{ order.id }}">
+              <button type="submit" class="danger-btn" onclick="return confirm('Are you sure you want to clear this order?')">
+                Clear
+              </button>
+            </form>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</body>
+</html>

@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Edit Seller</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 font-sans">
+  <div class="max-w-2xl mx-auto p-6">
+    <h1 class="text-2xl font-bold mb-4">Edit Seller</h1>
+    <form method="post">
+      <label class="block mb-2">Store name
+        <input name="store_name" value="{{ seller.store_name }}" class="w-full border rounded px-3 py-2" />
+      </label>
+      <label class="block mb-2">Owner name
+        <input name="owner_name" value="{{ seller.owner_name or '' }}" class="w-full border rounded px-3 py-2" />
+      </label>
+      <label class="block mb-2">Phone
+        <input name="phone" value="{{ seller.phone }}" class="w-full border rounded px-3 py-2" />
+      </label>
+      <label class="block mb-2">Address
+        <textarea name="address" class="w-full border rounded px-3 py-2">{{ seller.address or '' }}</textarea>
+      </label>
+      <label class="block mb-2">Category
+        <input name="category" value="{{ seller.category or '' }}" class="w-full border rounded px-3 py-2" />
+      </label>
+
+      <div class="mt-4">
+        <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded">Save</button>
+        <a href="{{ url_for('admin_sellers') }}" class="px-4 py-2 border rounded ml-2">Cancel</a>
+      </div>
+    </form>
+  </div>
+</body>
+</html>

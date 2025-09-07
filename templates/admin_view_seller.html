@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>View Seller</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 font-sans">
+  <div class="max-w-4xl mx-auto p-6">
+    <h1 class="text-2xl font-bold mb-4">Seller — {{ seller.store_name }}</h1>
+    <p><strong>Owner:</strong> {{ seller.owner_name or '-' }}</p>
+    <p><strong>Phone:</strong> {{ seller.phone }}</p>
+    <p><strong>Address:</strong> {{ seller.address or '-' }}</p>
+    <p><strong>Category:</strong> {{ seller.category or '-' }}</p>
+    <p><strong>Registered:</strong> {{ seller.registered_at.strftime('%Y-%m-%d %H:%M') if seller.registered_at else '' }}</p>
+
+    <h2 class="mt-6 text-lg font-semibold">Products ({{ products|length }})</h2>
+    <ul class="list-disc ml-6">
+      {% for p in products %}
+        <li>{{ p.product_name }} — ₹{{ p.price }} ({{ p.quantity }} {{ p.unit or '' }})</li>
+      {% else %}
+        <li>No products</li>
+      {% endfor %}
+    </ul>
+
+    <div class="mt-6">
+      <a href="{{ url_for('admin_sellers') }}" class="px-4 py-2 border rounded">Back</a>
+      <a href="{{ url_for('admin_edit_seller', seller_id=seller.id) }}" class="px-4 py-2 bg-green-600 text-white rounded ml-2">Edit</a>
+    </div>
+  </div>
+</body>
+</html>
