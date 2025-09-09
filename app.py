@@ -6,10 +6,11 @@ from models import db, Product, User, Order, OrderItem, StoreSettings, OTPVerifi
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy import func
 from werkzeug.security import generate_password_hash, check_password_hash
-from datetime import date
+from datetime import date , timedelta
 from functools import wraps
 from collections import defaultdict
 from PIL import Image
+from dotenv import load_dotenv
 import io
 import csv
 import json
@@ -25,11 +26,18 @@ import requests
 # --------------------------------------------------------------------------------
 
 app = Flask(__name__, static_folder='static')
-app.secret_key = 'your-secret-key'
-
+app.secret_key = os.environ.get("SECRET_KEY", "fallback-secret")
 # MySQL Database configuration - 'hyperstore' naam ko restore kiya gaya hai
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:Suraj%40123@localhost/hyperstore'
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get("DATABASE_URL")
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
+# .env file load karo
+load_dotenv()
+TWOFACTOR_API_KEY = os.environ.get("TWOFACTOR_API_KEY")
+
+OTP_EXPIRY_SECONDS = 2 * 60       # OTP valid for 5 minutes
+OTP_RESEND_COOLDOWN = 60          # seconds before same number can request again
+MAX_OTPS_PER_HOUR = 2             # basic throttle
 
 # OTP storage (for a temporary check, in-memory)
 otp_storage = {}
@@ -48,7 +56,6 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['OFFERS_FOLDER'] = OFFERS_FOLDER
 app.config['QR_CODE_FOLDER'] = QR_CODE_FOLDER
 app.config['MASTER_FOLDER'] = MASTER_FOLDER
-
 # --------------------------------------------------------------------------------
 # Helper Functions
 # --------------------------------------------------------------------------------
@@ -84,6 +91,66 @@ def is_valid_phone(phone):
     if phone in blacklisted_numbers:
         return False
     return True
+
+# Helper: verify OTP via 2factor.in
+def verify_otp_2factor(session_id: str, otp_code: str):
+    if not TWOFACTOR_API_KEY:
+        return False, "OTP provider not configured"
+    verify_url = f"https://2factor.in/API/V1/{TWOFACTOR_API_KEY}/SMS/VERIFY/{session_id}/{otp_code}"
+    try:
+        resp = requests.get(verify_url, timeout=10)
+        data = resp.json()
+    except Exception as e:
+        return False, f"Network error: {e}"
+
+    if data.get("Status") == "Success":
+        return True, None
+    else:
+        return False, data.get("Details") or data.get("Message") or "Invalid OTP"
+    
+   # For Seller Registration  
+def send_otp_2factor(phone: str, otp_code: str):
+    """Send OTP via 2factor.in, return (ok:bool, details:str)."""
+    if not TWOFACTOR_API_KEY:
+        return False, "OTP provider not configured"
+    url = f"https://2factor.in/API/V1/{TWOFACTOR_API_KEY}/SMS/{phone}/{otp_code}"
+    try:
+        resp = requests.get(url, timeout=10)
+        data_text = resp.text
+        # 2factor returns JSON-like text; check status robustly
+        try:
+            data = resp.json()
+        except Exception:
+            data = {}
+        if resp.status_code == 200 and (data.get("Status") == "Success" or '"Status":"Success"' in data_text):
+            return True, data.get("Details") or "Sent"
+        else:
+            # return provider message for debugging (not to user in prod)
+            return False, data.get("Details") or data.get("Message") or data_text
+    except Exception as e:
+        return False, str(e)
+    # For Forgot Password 
+def send_otp_autogen(phone: str):
+    """
+    Request 2factor.in to generate & send OTP to `phone`.
+    Returns (True, session_id) on success, else (False, error_message).
+    """
+    if not TWOFACTOR_API_KEY:
+        return False, "OTP provider not configured"
+
+    otp_url = f"https://2factor.in/API/V1/{TWOFACTOR_API_KEY}/SMS/{phone}/AUTOGEN"
+    try:
+        resp = requests.get(otp_url, timeout=10)
+        data = resp.json()
+    except Exception as e:
+        return False, f"Network error: {e}"
+
+    if data.get("Status") == "Success":
+        return True, data.get("Details")   # Details = session_id
+    else:
+        return False, data.get("Details") or data.get("Message") or "Failed to send OTP"
+    
+# For Admin Login 
 def admin_login_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
@@ -135,7 +202,6 @@ def home():
 # ---- Admin Login ----
 @app.route('/admin/login', methods=['GET', 'POST'])
 def admin_login():
-    # Already logged in admin ko direct dashboard bhejo
     if session.get('admin_logged_in'):
         return redirect(url_for('admin_dashboard'))
 
@@ -143,8 +209,11 @@ def admin_login():
         username = request.form['username'].strip()
         password = request.form['password'].strip()
 
-        # Hardcoded admin credentials
-        if username == "Suraj" and password == "Suraj@123":
+        # Env se credentials load karo
+        admin_user = os.environ.get("ADMIN_USERNAME")
+        admin_pass = os.environ.get("ADMIN_PASSWORD")
+
+        if username == admin_user and password == admin_pass:
             session['admin_logged_in'] = True
             flash("Welcome Admin!", "success")
             return redirect(url_for('admin_dashboard'))
@@ -583,49 +652,91 @@ def login():
             return render_template('login.html', error=error)
     return render_template('login.html')
 
-# forgot password route
+# ---- Forgot password route (uses helper) ----
 @app.route('/forgot_password', methods=['GET', 'POST'])
 def forgot_password():
     if request.method == 'POST':
-        phone = request.form['phone']
+        phone_raw = request.form.get('phone', '').strip()
+        # normalize phone: remove spaces, dashes
+        phone = re.sub(r'\D', '', phone_raw)
 
-        # Check seller exists
+        # if phone is 10 digits, consider adding country code (2factor often expects 91XXXXXXXXXX)
+        if len(phone) == 10:
+            phone_to_use = '91' + phone
+        else:
+            phone_to_use = phone  # assume user gave full international format
+
+        app.logger.info(f"[forgot_password] requested for phone_raw={phone_raw} normalized={phone_to_use}")
+
+        # Check seller exists - try both formats: stored with or without country code
         seller = User.query.filter_by(phone=phone).first()
         if not seller:
-            return "No account found with this phone number."
+            seller = User.query.filter_by(phone=phone_to_use).first()
 
-        # Send OTP via 2Factor
-        api_key = '05bd5e91-7031-11f0-a562-0200cd936042'
-        otp_url = f"https://2factor.in/API/V1/{api_key}/SMS/{phone}/AUTOGEN"
-        response = requests.get(otp_url).json()
+        if not seller:
+            app.logger.warning(f"[forgot_password] No seller found for {phone_raw}")
+            flash("No account found with this phone number.", "warning")
+            return render_template('forgot_password.html')
 
-        if response.get("Status") == "Success":
-            session['reset_phone'] = phone
-            session['reset_session_id'] = response.get("Details")
+        # send OTP using AUTOGEN helper
+        ok, result = send_otp_autogen(phone_to_use)
+        app.logger.info(f"[forgot_password] send_otp_autogen result for {phone_to_use}: ok={ok} result={result}")
+
+        if ok:
+            session['reset_phone'] = phone_to_use
+            session['reset_session_id'] = result
+            session['reset_otp_attempts'] = 0
+            flash("OTP sent to your phone. Enter the code to reset password.", "success")
             return redirect(url_for('verify_reset_otp'))
         else:
-            return "Error sending OTP. Try again."
+            # show provider error in logs; user sees friendly message
+            app.logger.error(f"[forgot_password] OTP send failed: {result}")
+            flash("Error sending OTP. Please try again after some time.", "danger")
+            return render_template('forgot_password.html')
 
     return render_template('forgot_password.html')
 
-# OTP for reset password route
+# ---- Verify reset OTP route ----
 @app.route('/verify_reset_otp', methods=['GET', 'POST'])
 def verify_reset_otp():
+    # Ensure flow started
     if 'reset_phone' not in session or 'reset_session_id' not in session:
+        flash("Please start the password reset process first.", "warning")
         return redirect(url_for('forgot_password'))
 
+    # Initialize attempts if absent
+    attempts = session.get('reset_otp_attempts', 0)
+    MAX_ATTEMPTS = 5
+
     if request.method == 'POST':
-        otp = request.form['otp']
-        session_id = session['reset_session_id']
-        api_key = '05bd5e91-7031-11f0-a562-0200cd936042'
+        otp = request.form.get('otp', '').strip()
+        if not otp:
+            flash("Please enter the OTP.", "danger")
+            return render_template('verify_reset_otp.html')
 
-        verify_url = f"https://2factor.in/API/V1/{api_key}/SMS/VERIFY/{session_id}/{otp}"
-        response = requests.get(verify_url).json()
+        # limit attempts
+        if attempts >= MAX_ATTEMPTS:
+            # too many attempts — clear session and ask to restart
+            session.pop('reset_session_id', None)
+            session.pop('reset_phone', None)
+            session.pop('reset_otp_attempts', None)
+            flash("Too many incorrect OTP attempts. Please request a new OTP.", "danger")
+            return redirect(url_for('forgot_password'))
 
-        if response.get("Status") == "Success":
+        session_id = session.get('reset_session_id')
+        ok, err = verify_otp_2factor(session_id, otp)
+        if ok:
+            # OTP verified — allow user to reset password
+            # Keep reset_phone in session so reset_password route knows which user
+            flash("OTP verified. You can now set a new password.", "success")
             return redirect(url_for('reset_password'))
         else:
-            return "Invalid OTP. Please try again."
+            # increment attempts
+            attempts += 1
+            session['reset_otp_attempts'] = attempts
+            remaining = MAX_ATTEMPTS - attempts
+            flash(f"Invalid OTP. {remaining} attempts remaining.", "danger")
+            return render_template('verify_reset_otp.html')
 
     return render_template('verify_reset_otp.html')
 
@@ -1288,34 +1399,68 @@ def logout():
     session.pop('store_name', None)
     return redirect('/login')
 
-# Send OTP route for Seller Number OTP
+# ---- Send OTP route for Seller Number OTP (updated) ----
 @app.route('/send_otp', methods=['POST'])
 def send_otp():
-    data = request.get_json()
-    phone = data.get('phone')
-    if not is_valid_phone(phone):
-        return jsonify({'success': False, 'error': 'Invalid phone number'})
-    otp = str(random.randint(100000, 999999))
-    existing_entry = OTPVerification.query.filter_by(phone=phone).first()
-    if existing_entry:
-        existing_entry.otp = otp
-        existing_entry.created_at = datetime.utcnow()
-    else:
-        new_entry = OTPVerification(phone=phone, otp=otp)
-        db.session.add(new_entry)
-    db.session.commit()
-    api_key = '05bd5e91-7031-11f0-a562-0200cd936042'
-    url = f"https://2factor.in/API/V1/{api_key}/SMS/{phone}/{otp}"
-    try:
-        response = requests.get(url)
-        print(response.text)
-        if response.status_code == 200 and '"Status":"Success"' in response.text:
-            return jsonify({'success': True})
-        else:
-            return jsonify({'success': False, 'error': 'Failed to send OTP', 'details': response.text})
-    except Exception as e:
-        return jsonify({'success': False, 'error': 'Exception occurred', 'details': str(e)})
+    data = request.get_json() or {}
+    phone = (data.get('phone') or "").strip()
 
+    if not is_valid_phone(phone):
+        return jsonify({'success': False, 'error': 'Invalid phone number'}), 400
+
+    # Basic throttle: count OTPs in last hour for this phone
+    one_hour_ago = datetime.utcnow() - timedelta(hours=1)
+    recent_otps_count = OTPVerification.query.filter(
+        OTPVerification.phone == phone,
+        OTPVerification.created_at >= one_hour_ago
+    ).count()
+
+    if recent_otps_count >= MAX_OTPS_PER_HOUR:
+        return jsonify({'success': False, 'error': 'Too many OTP requests. Try after some time.'}), 429
+
+    # Check last OTP entry to enforce resend cooldown
+    last_entry = OTPVerification.query.filter_by(phone=phone).order_by(OTPVerification.created_at.desc()).first()
+    now = datetime.utcnow()
+    if last_entry:
+        # If last OTP was created recently, prevent immediate resend
+        if (now - last_entry.created_at).total_seconds() < OTP_RESEND_COOLDOWN:
+            remaining = OTP_RESEND_COOLDOWN - int((now - last_entry.created_at).total_seconds())
+            return jsonify({'success': False, 'error': f'Please wait {remaining}s before requesting a new OTP.'}), 429
+
+    # generate OTP
+    otp = str(random.randint(100000, 999999))
+
+    # Upsert: update existing or create new entry; set created_at = now and store otp
+    try:
+        if last_entry:
+            last_entry.otp = otp
+            last_entry.created_at = now
+            db.session.add(last_entry)
+        else:
+            new_entry = OTPVerification(phone=phone, otp=otp, created_at=now)
+            db.session.add(new_entry)
+        db.session.commit()
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'success': False, 'error': 'Database error', 'details': str(e)}), 500
+
+    # send via provider
+    ok, details = send_otp_2factor(phone, otp)
+    if ok:
+        # do NOT return the OTP in response. return success and maybe a masked phone.
+        return jsonify({'success': True, 'message': 'OTP sent'}), 200
+    else:
+        # Provider failed — consider removing DB entry or marking as failed (we leave it but you may delete)
+        # Optionally: delete the OTP record so user can retry without hitting cooldown
+        try:
+            # remove the OTP row so the user can retry immediately if provider failed
+            entry = OTPVerification.query.filter_by(phone=phone).order_by(OTPVerification.created_at.desc()).first()
+            if entry:
+                db.session.delete(entry)
+                db.session.commit()
+        except Exception:
+            db.session.rollback()
+        return jsonify({'success': False, 'error': 'Failed to send OTP', 'details': str(details)}), 502
 # Verify OTP route for seller 
 @app.route('/verify_otp', methods=['POST'])
 def verify_otp():
