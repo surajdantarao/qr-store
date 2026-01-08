@@ -25,15 +25,16 @@ import math
 # --------------------------------------------------------------------------------
 # Flask App Setup
 # --------------------------------------------------------------------------------
-
+load_dotenv()
 app = Flask(__name__, static_folder='static')
 app.secret_key = os.environ.get("SECRET_KEY", "fallback-secret")
 # MySQL Database configuration - 'hyperstore' naam ko restore kiya gaya hai
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get("DATABASE_URL")
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+db.init_app(app) 
+with app.app_context():
+    db.create_all()
 
-# .env file load karo
-load_dotenv()
 TWOFACTOR_API_KEY = os.environ.get("TWOFACTOR_API_KEY")
 
 OTP_EXPIRY_SECONDS = 2 * 60       # OTP valid for 5 minutes
