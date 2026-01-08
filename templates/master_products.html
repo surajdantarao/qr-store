@@ -94,18 +94,12 @@
       </div>
 
       <!-- Submit bar -->
-      <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
-        <div class="text-xs text-gray-500">
-          Selected items will be added to your products after you provide price, quantity & unit.
+      <!-- Fixed Submit bar --> <div class="fixed bottom-0 left-0 right-0 bg-white border-t shadow-md px-4 py-3">
+         <div class="max-w-6xl mx-auto flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3"> 
+          <div class="text-xs text-gray-500"> Selected items will be added to your products after you provide price, quantity & unit. </div> 
+          <button type="submit" id="submitBtn" class="inline-flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg px-5 py-2.5 disabled:opacity-50 disabled:cursor-not-allowed"> Add Selected Products </button>
+         </div> 
         </div>
-        <button type="submit" id="submitBtn"
-                class="inline-flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg px-5 py-2.5 disabled:opacity-50 disabled:cursor-not-allowed">
-          Add Selected Products
-        </button>
-      </div>
-    </form>
-  </div>
-
   <script>
     // Elements
     const selectAll = document.getElementById('selectAll');

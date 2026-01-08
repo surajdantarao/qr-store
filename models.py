@@ -19,6 +19,9 @@ class User(db.Model):
     category = db.Column(db.String(50), nullable=True)
     qr_code_path = db.Column(db.String(255), nullable=True)
     reset_token = db.Column(db.String(100), nullable=True)
+    store_lat = db.Column(db.Float)
+    store_lng = db.Column(db.Float)
+    # RELATIONSHIPS 
     products = db.relationship('Product', backref='seller', lazy=True, cascade="all, delete-orphan")
     orders = db.relationship('Order', backref='seller', lazy=True, cascade="all, delete-orphan")
     settings = db.relationship('StoreSettings', backref='seller', lazy=True, uselist=False, cascade="all, delete-orphan")

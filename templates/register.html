@@ -7,7 +7,7 @@
 
   <!-- TailwindCSS -->
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Google Font (optional) -->
+  <!-- Google Font -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet" />
   <!-- Icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
@@ -16,107 +16,112 @@
     body { font-family: 'Inter', system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; }
   </style>
 </head>
-<body class="min-h-screen bg-gray-50">
+<body class="min-h-screen bg-gradient-to-br from-gray-50 to-emerald-50">
 
-  <!-- Top brand bar (consistent with other pages) -->
-  <header class="bg-white shadow-sm sticky top-0 z-40">
+  <!-- Top brand bar -->
+  <header class="bg-white/90 backdrop-blur border-b sticky top-0 z-40">
     <div class="max-w-3xl mx-auto px-4 py-4 flex items-center justify-between">
       <a href="/" class="flex items-center gap-2 text-emerald-600 font-extrabold tracking-tight text-xl">
         <i class="fa-solid fa-qrcode"></i> SmartDukaan
       </a>
       <nav class="hidden sm:flex items-center gap-3">
         <a href="/" class="text-gray-700 hover:text-emerald-600 text-sm font-medium">Home</a>
-        <a href="/login" class="text-sm font-medium bg-yellow-400 hover:bg-yellow-500 text-black px-3 py-2 rounded-md shadow">Seller Login</a>
+        <a href="/login" class="text-sm font-semibold bg-yellow-400 hover:bg-yellow-500 text-black px-4 py-2 rounded-lg shadow">
+          Seller Login
+        </a>
       </nav>
     </div>
   </header>
 
   <!-- Page -->
   <main class="max-w-3xl mx-auto px-4 py-8">
-    <div class="bg-white rounded-2xl shadow-lg border border-gray-100 p-6 sm:p-8">
-      <div class="text-center mb-6">
+    <div class="bg-white rounded-3xl shadow-xl border border-gray-100 p-6 sm:p-8">
+
+      <!-- Heading -->
+      <div class="text-center mb-8">
         <h1 class="text-2xl sm:text-3xl font-extrabold text-gray-900">Register Your Store</h1>
-        <p class="text-gray-500 mt-1">Create your SmartDukaan seller account in a minute.</p>
+        <p class="text-gray-500 mt-1">Create your SmartDukaan seller account in a minute 🚀</p>
       </div>
 
-      <!-- Progress chips (visual only) -->
-      <div class="flex flex-wrap items-center justify-center gap-2 mb-6">
-        <span class="px-3 py-1 rounded-full border text-xs sm:text-[13px] border-emerald-200 text-emerald-700 bg-emerald-50">1. Store</span>
-        <span class="px-3 py-1 rounded-full border text-xs sm:text-[13px] border-emerald-200 text-emerald-700 bg-emerald-50">2. Phone & OTP</span>
-        <span class="px-3 py-1 rounded-full border text-xs sm:text-[13px] border-gray-200 text-gray-600">3. Address & Category</span>
-        <span class="px-3 py-1 rounded-full border text-xs sm:text-[13px] border-gray-200 text-gray-600">4. Password</span>
+      <!-- Progress -->
+      <div class="flex flex-wrap items-center justify-center gap-2 mb-8">
+        <span class="px-3 py-1 rounded-full border text-xs border-emerald-200 text-emerald-700 bg-emerald-50">1. Store</span>
+        <span class="px-3 py-1 rounded-full border text-xs border-emerald-200 text-emerald-700 bg-emerald-50">2. Phone & OTP</span>
+        <span class="px-3 py-1 rounded-full border text-xs border-gray-200 text-gray-600">3. Address & Category</span>
+        <span class="px-3 py-1 rounded-full border text-xs border-gray-200 text-gray-600">4. Password</span>
       </div>
 
-      <!-- FORM (IDs, names, action, onsubmit kept identical) -->
-      <form id="registrationForm" action="/register" method="POST" onsubmit="return checkFormValidation()" class="space-y-6">
+      <!-- FORM -->
+      <form id="registrationForm" action="/register" method="POST" onsubmit="return checkFormValidation()" class="space-y-7">
 
         <!-- Store + Owner -->
         <div class="grid sm:grid-cols-2 gap-4">
           <div>
-            <label for="store_name" class="flex items-center gap-2 text-sm font-semibold text-gray-800 mb-2">
+            <label for="store_name" class="flex items-center gap-2 text-sm font-semibold text-gray-800 mb-1">
               <i class="fa-solid fa-store text-emerald-600"></i> Store Name
             </label>
             <input
               type="text" id="store_name" name="store_name" required
               placeholder="e.g., Shree Ganesh Kirana"
-              class="w-full rounded-xl border border-gray-200 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-emerald-300"
+              class="w-full rounded-xl border border-gray-200 px-4 py-3 focus:ring-2 focus:ring-emerald-400 outline-none"
             />
-            <p class="text-xs text-gray-500 mt-2">Enter the official name of your shop.</p>
+            <p class="text-xs text-gray-500 mt-1">Enter the official name of your shop.</p>
           </div>
 
           <div>
-            <label for="owner_name" class="flex items-center gap-2 text-sm font-semibold text-gray-800 mb-2">
+            <label for="owner_name" class="flex items-center gap-2 text-sm font-semibold text-gray-800 mb-1">
               <i class="fa-solid fa-user text-emerald-600"></i> Owner Name
             </label>
             <input
               type="text" id="owner_name" name="owner_name" required
               placeholder="Your full name"
-              class="w-full rounded-xl border border-gray-200 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-emerald-300"
+              class="w-full rounded-xl border border-gray-200 px-4 py-3 focus:ring-2 focus:ring-emerald-400 outline-none"
             />
-            <p class="text-xs text-gray-500 mt-2">Who will manage this seller account.</p>
+            <p class="text-xs text-gray-500 mt-1">Who will manage this seller account.</p>
           </div>
         </div>
 
-        <!-- Phone + OTP send -->
+        <!-- Phone -->
         <div>
-          <label for="phone" class="flex items-center gap-2 text-sm font-semibold text-gray-800 mb-2">
+          <label for="phone" class="flex items-center gap-2 text-sm font-semibold text-gray-800 mb-1">
             <i class="fa-solid fa-phone text-emerald-600"></i> Phone Number
           </label>
-          <div class="flex gap-3">
+          <div class="flex flex-col sm:flex-row gap-3">
             <input
               type="text" id="phone" name="phone" required
               inputmode="numeric" pattern="^[6-9]\d{9}$" minlength="10" maxlength="10" autocomplete="tel"
               placeholder="10-digit mobile (India)"
-              class="flex-1 rounded-xl border border-gray-200 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-emerald-300"
+              class="flex-1 rounded-xl border border-gray-200 px-4 py-3 focus:ring-2 focus:ring-emerald-400 outline-none"
             />
-            <button type="button" class="px-4 py-3 rounded-xl bg-emerald-50 text-emerald-900 border border-emerald-200 hover:bg-emerald-100 font-semibold"
-                    onclick="sendOTP()">
+            <button type="button"
+              class="px-5 py-3 rounded-xl bg-emerald-600 text-white font-semibold hover:bg-emerald-700 transition"
+              onclick="sendOTP()">
               <i class="fa-solid fa-paper-plane"></i> Send OTP
             </button>
           </div>
-          <p class="text-xs text-gray-500 mt-2">Your number will be used for login & verification.</p>
+          <p class="text-xs text-gray-500 mt-1">Your number will be used for login & verification.</p>
         </div>
 
-        <!-- OTP Section -->
-        <div id="otpSection" style="display:none;" class="rounded-2xl border border-indigo-100 bg-indigo-50 p-4">
-          <label for="otp" class="flex items-center gap-2 text-sm font-semibold text-gray-800 mb-2">
+        <!-- OTP -->
+        <div id="otpSection" style="display:none;" class="rounded-2xl bg-indigo-50 border border-indigo-200 p-4">
+          <label for="otp" class="flex items-center gap-2 text-sm font-semibold text-gray-800 mb-1">
             <i class="fa-solid fa-key text-indigo-600"></i> Enter OTP
           </label>
           <div class="flex gap-3">
             <input
               type="text" id="otp" name="otp" maxlength="6"
               placeholder="6-digit OTP"
-              class="flex-1 rounded-xl border border-gray-200 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-indigo-300"
+              class="flex-1 rounded-xl border border-gray-200 px-4 py-3 focus:ring-2 focus:ring-indigo-400 outline-none"
             />
             <button id="verifyBtn" type="button"
-                    class="px-4 py-3 rounded-xl bg-indigo-600 text-white hover:bg-indigo-700 font-semibold"
-                    onclick="verifyOTP()">Verify</button>
+              class="px-4 py-3 rounded-xl bg-indigo-600 text-white hover:bg-indigo-700 font-semibold"
+              onclick="verifyOTP()">Verify</button>
           </div>
           <span id="otpStatus" class="block mt-2 text-sm font-semibold"></span>
           <div id="otpTimer" class="text-xs text-gray-500 mt-1"></div>
           <button id="resendBtn" type="button"
-                  class="mt-3 px-3 py-2 rounded-lg bg-white border border-gray-200 text-gray-700 hover:bg-gray-50 text-sm font-medium"
-                  onclick="sendOTP()" disabled>
+            class="mt-3 px-3 py-2 rounded-lg bg-white border border-gray-200 text-gray-700 hover:bg-gray-50 text-sm font-medium"
+            onclick="sendOTP()" disabled>
             Resend OTP
           </button>
         </div>
@@ -125,50 +130,63 @@
 
         <!-- Address -->
         <div>
-          <label for="store_address" class="flex items-center gap-2 text-sm font-semibold text-gray-800 mb-2">
+          <label for="store_address" class="flex items-center gap-2 text-sm font-semibold text-gray-800 mb-1">
             <i class="fa-solid fa-map-location-dot text-emerald-600"></i> Store Address
           </label>
           <textarea
             id="store_address" name="store_address" required
             placeholder="Full address with area, city, pincode"
-            class="w-full rounded-xl border border-gray-200 px-4 py-3 min-h-[96px] focus:outline-none focus:ring-2 focus:ring-emerald-300"
+            class="w-full rounded-xl border border-gray-200 px-4 py-3 min-h-[96px] focus:ring-2 focus:ring-emerald-400 outline-none"
           ></textarea>
-          <p class="text-xs text-gray-500 mt-2">Used for deliveries and customer reference.</p>
+          <p class="text-xs text-gray-500 mt-1">Used for deliveries and customer reference.</p>
+
+          <!-- Location Button -->
+          <button type="button"
+            onclick="getStoreLocation()"
+            class="mt-3 inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-emerald-100 border border-emerald-300 text-emerald-800 hover:bg-emerald-200 font-semibold text-sm">
+            <i class="fa-solid fa-location-crosshairs"></i>
+            Use Current Location
+          </button>
+
+          <p id="locationStatus" class="text-xs mt-2 text-gray-500">
+            Location helps customers find your store nearby.
+          </p>
         </div>
+
+        <input type="hidden" id="store_lat" name="store_lat">
+        <input type="hidden" id="store_lng" name="store_lng">
 
         <!-- Category -->
         <div>
-          <label for="store_category" class="flex items-center gap-2 text-sm font-semibold text-gray-800 mb-2">
+          <label for="store_category" class="flex items-center gap-2 text-sm font-semibold text-gray-800 mb-1">
             <i class="fa-solid fa-list text-emerald-600"></i> Store Category
           </label>
           <select id="store_category" name="store_category" required
-                  class="w-full rounded-xl border border-gray-200 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-emerald-300">
+            class="w-full rounded-xl border border-gray-200 px-4 py-3 focus:ring-2 focus:ring-emerald-400 outline-none">
             <option value="">Select Category</option>
             <option value="grocery">Grocery</option>
             <option value="pharmacy">Pharmacy</option>
             <option value="stationery">Stationery</option>
           </select>
-          <p class="text-xs text-gray-500 mt-2">Choose what type of products you sell.</p>
         </div>
 
         <!-- Passwords -->
         <div class="grid sm:grid-cols-2 gap-4">
           <div>
-            <label for="password" class="flex items-center gap-2 text-sm font-semibold text-gray-800 mb-2">
+            <label for="password" class="flex items-center gap-2 text-sm font-semibold text-gray-800 mb-1">
               <i class="fa-solid fa-lock text-emerald-600"></i> Password
             </label>
             <div class="relative">
               <input
                 type="password" id="password" name="password" required
                 placeholder="Create password" autocomplete="new-password"
-                class="w-full rounded-xl border border-gray-200 px-4 py-3 pr-11 focus:outline-none focus:ring-2 focus:ring-emerald-300"
+                class="w-full rounded-xl border border-gray-200 px-4 py-3 pr-11 focus:ring-2 focus:ring-emerald-400 outline-none"
               />
-              <button type="button" id="togglePass" aria-label="Show password"
-                      class="absolute right-2 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700">
+              <button type="button" id="togglePass"
+                class="absolute right-2 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700">
                 <i class="fa-regular fa-eye"></i>
               </button>
             </div>
-            <!-- Visual-only strength bar -->
             <div class="h-1.5 bg-gray-200 rounded-full overflow-hidden mt-2">
               <span id="strengthBar" class="block h-full w-0 bg-emerald-500 transition-all"></span>
             </div>
@@ -179,17 +197,17 @@
           </div>
 
           <div>
-            <label for="confirm_password" class="flex items-center gap-2 text-sm font-semibold text-gray-800 mb-2">
+            <label for="confirm_password" class="flex items-center gap-2 text-sm font-semibold text-gray-800 mb-1">
               <i class="fa-solid fa-lock text-emerald-600"></i> Confirm Password
             </label>
             <div class="relative">
               <input
                 type="password" id="confirm_password" name="confirm_password" required
                 placeholder="Re-enter password" autocomplete="new-password"
-                class="w-full rounded-xl border border-gray-200 px-4 py-3 pr-11 focus:outline-none focus:ring-2 focus:ring-emerald-300"
+                class="w-full rounded-xl border border-gray-200 px-4 py-3 pr-11 focus:ring-2 focus:ring-emerald-400 outline-none"
               />
-              <button type="button" id="togglePass2" aria-label="Show password"
-                      class="absolute right-2 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700">
+              <button type="button" id="togglePass2"
+                class="absolute right-2 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700">
                 <i class="fa-regular fa-eye"></i>
               </button>
             </div>
@@ -198,7 +216,7 @@
 
         <!-- Submit -->
         <button type="submit"
-                class="w-full py-3.5 rounded-xl bg-gradient-to-r from-emerald-600 to-indigo-600 text-white font-extrabold shadow-lg hover:brightness-95">
+          class="w-full py-3.5 rounded-xl bg-gradient-to-r from-emerald-600 to-indigo-600 text-white font-extrabold shadow-lg hover:brightness-95 transition">
           <i class="fa-solid fa-store mr-2"></i> Register Store
         </button>
       </form>
@@ -210,7 +228,7 @@
     © 2025 SmartDukaan. All rights reserved.
   </footer>
 
-  <!-- Same JS logic from your code (unchanged) -->
+  <!-- JS LOGIC: UNCHANGED -->
   <script>
     let otpTimer;
 
@@ -283,7 +301,13 @@
       const verified = document.getElementById("otp_verified").value;
       const password = document.getElementById("password").value;
       const confirmPassword = document.getElementById("confirm_password").value;
-
+      const lat = document.getElementById("store_lat").value;
+      const lng = document.getElementById("store_lng").value;
+      
+      if (!lat || !lng) {
+        alert("Please use 'Current Location' to register your store.");
+        return false;
+      }
       if (verified !== "true") {
         alert("Please verify your phone number with the OTP before submitting.");
         return false;
@@ -318,7 +342,6 @@
       }, 1000);
     }
 
-    // Small UI helpers (no backend logic change)
     (function () {
       const pass = document.getElementById('password');
       const pass2 = document.getElementById('confirm_password');
@@ -334,7 +357,6 @@
       t1.addEventListener('click', () => toggle(pass, t1));
       t2.addEventListener('click', () => toggle(pass2, t2));
 
-      // simple visual strength meter
       pass.addEventListener('input', () => {
         const v = pass.value;
         let s = 0;
@@ -346,6 +368,49 @@
         bar.style.width = Math.min(s, 100) + '%';
       });
     })();
+
+    function getStoreLocation() {
+      if (!navigator.geolocation) {
+        alert("Geolocation not supported in this browser");
+        return;
+      }
+
+      const status = document.getElementById("locationStatus");
+      status.innerText = "📍 Fetching accurate location...";
+
+      navigator.geolocation.getCurrentPosition(
+        function (position) {
+          const lat = position.coords.latitude;
+          const lng = position.coords.longitude;
+          const accuracy = position.coords.accuracy;
+
+          if (accuracy > 100) {
+            status.innerText = "⚠️ Location not accurate (" + Math.round(accuracy) + "m). Please move outside and try again.";
+            status.classList.remove("text-gray-500");
+            status.classList.add("text-red-600");
+            return;
+          }
+
+          document.getElementById("store_lat").value = lat;
+          document.getElementById("store_lng").value = lng;
+
+          status.innerText = "✅ Accurate location captured";
+          status.classList.remove("text-gray-500", "text-red-600");
+          status.classList.add("text-emerald-600");
+        },
+        function () {
+          alert("Please allow location access to continue");
+          status.innerText = "❌ Location permission denied";
+          status.classList.remove("text-gray-500");
+          status.classList.add("text-red-600");
+        },
+        {
+          enableHighAccuracy: true,
+          timeout: 15000,
+          maximumAge: 0
+        }
+      );
+    }
   </script>
 </body>
 </html>

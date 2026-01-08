@@ -11,6 +11,7 @@ from functools import wraps
 from collections import defaultdict
 from PIL import Image
 from dotenv import load_dotenv
+from math import radians, cos, sin, asin, sqrt
 import io
 import csv
 import json
@@ -20,7 +21,7 @@ import uuid
 import qrcode
 import random
 import requests
-
+import math
 # --------------------------------------------------------------------------------
 # Flask App Setup
 # --------------------------------------------------------------------------------
@@ -90,8 +91,19 @@ def is_valid_phone(phone):
     }
     if phone in blacklisted_numbers:
         return False
-    return True
+    # For Lang And Lati
+def calculate_distance(lat1, lng1, lat2, lng2):
+    R = 6371  # Earth radius in KM
+    dlat = math.radians(lat2 - lat1)
+    dlng = math.radians(lng2 - lng1)
 
+    a = math.sin(dlat/2)**2 + \
+        math.cos(math.radians(lat1)) * \
+        math.cos(math.radians(lat2)) * \
+        math.sin(dlng/2)**2
+
+    c = 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a))
+    return R * c
 # Helper: verify OTP via 2factor.in
 def verify_otp_2factor(session_id: str, otp_code: str):
     if not TWOFACTOR_API_KEY:
@@ -580,6 +592,8 @@ def register_store():
             phone = (request.form.get("phone") or "").strip()
             store_address = (request.form.get("store_address") or "").strip()
             store_category = request.form.get("store_category")
+            store_lat = request.form.get("store_lat")
+            store_lng = request.form.get("store_lng")
             password = request.form.get("password")
             confirm_password = request.form.get("confirm_password")
 
@@ -591,6 +605,8 @@ def register_store():
 
             if User.query.filter_by(phone=phone).first():
                 return "A store with this phone number already exists."
+            if not store_lat or not store_lng:
+                return "Location not captured. Please use current location."
 
             base_slug = slugify(store_name)
             slug = base_slug
@@ -612,7 +628,9 @@ def register_store():
                 slug=slug,
                 address=store_address,
                 category=store_category,
-                qr_code_path=qr_code_path
+                qr_code_path=qr_code_path,
+                store_lat=float(store_lat),
+                store_lng=float(store_lng)
             )
 
             db.session.add(new_user)
@@ -630,6 +648,40 @@ def register_store():
             db.session.rollback()
             return f"Registration failed: {str(e)}"
     return render_template("register.html")
+# Nearby Store Route
+@app.route('/nearby-stores')
+def nearby_stores():
+    lat = float(request.args.get('lat'))
+    lng = float(request.args.get('lng'))
+
+    stores = User.query.filter(
+        User.store_lat.isnot(None),
+        User.store_lng.isnot(None)
+    ).all()
+
+    nearby = []
+
+    for store in stores:
+        distance = calculate_distance(
+            lat,
+            lng,
+            float(store.store_lat),
+            float(store.store_lng)
+        )
+
+        print("Customer:", lat, lng)
+        print("Store:", store.store_lat, store.store_lng)
+        print("Distance:", distance)
+
+        if distance <= 10:
+            nearby.append({
+                "store_name": store.store_name,
+                "category": store.category,
+                "distance": round(distance, 2),
+                "store_url": url_for("store_home", slug=store.slug)
+            })
+
+    return jsonify({"stores": nearby})
 
 # Login Seller route
 @app.route('/login', methods=['GET', 'POST'])
