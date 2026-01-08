@@ -702,7 +702,7 @@ def login():
             error = "Database error occurred. Please try again."
             print(f"Database Error: {str(e)}")
             return render_template('login.html', error=error)
-    return render_template('login.html')
+    return render_template('Login.html')
 
 # ---- Forgot password route (uses helper) ----
 @app.route('/forgot_password', methods=['GET', 'POST'])
