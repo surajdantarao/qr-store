@@ -9,3 +9,4 @@ requests==2.31.0
 gunicorn==20.1.0
 python-dotenv==1.0.0
 Flask-Migrate==4.0.4
+cryptography
