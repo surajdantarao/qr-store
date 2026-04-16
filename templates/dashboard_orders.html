@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <title>Seller Dashboard - Orders</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  {% include 'partials/app_design.html' %}
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -80,7 +81,10 @@
   </style>
 </head>
 <body>
+  {% set active_page = 'dashboard' %}
+  {% include 'partials/app_nav_seller.html' %}
   <h1>Orders for {{ store_name }}</h1>
+  <p style="margin-top:-8px; margin-bottom:16px; color:#666;">Each order below contains only the items assigned to this store.</p>
 
   <div class="table-wrapper">
     <table>
@@ -106,7 +110,6 @@
                 <li>
                   {{ item.product_name }}  
                   - ₹{{ item.unit_price }} × {{ item.quantity }}
-                  <span class="item-unit">{{ item.unit if item.unit else '' }}</span>
                 </li>
               {% endfor %}
             </ul>
@@ -141,5 +144,7 @@
       </tbody>
     </table>
   </div>
+  {% include 'partials/app_chat_fab.html' %}
+  {% include 'partials/app_nav_script.html' %}
 </body>
 </html>

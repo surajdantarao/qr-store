@@ -3,483 +3,804 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>SmartDukaan — Home</title>
-
-  <!-- Tailwind -->
+  <title>SmartDukaan - Home</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            ink: "#102033",
+            mist: "#eef4f8",
+            brand: {
+              50: "#eefbf5",
+              100: "#d7f5e6",
+              200: "#afe8c9",
+              300: "#79d4a5",
+              400: "#40bb80",
+              500: "#1b9c62",
+              600: "#147d4f",
+              700: "#0f6340",
+              800: "#104f35",
+              900: "#0e422d"
+            },
+            accent: {
+              50: "#f3f7ff",
+              100: "#e5eeff",
+              200: "#cddcff",
+              500: "#4d7cff",
+              700: "#2a56d2"
+            }
+          },
+          boxShadow: {
+            soft: "0 16px 40px rgba(16, 32, 51, 0.08)",
+            lift: "0 24px 60px rgba(10, 27, 46, 0.16)"
+          }
+        }
+      }
+    };
+  </script>
   <style>
-    :root{
-      --brand-emerald: #10b981;
-      --brand-emerald-600: #059669;
-      --soft-bg: #f0fdf4;
-      --muted: #6b7280;
+    :root { color-scheme: light; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: "Manrope", sans-serif;
+      background:
+        radial-gradient(circle at top left, rgba(77, 124, 255, 0.16), transparent 28%),
+        radial-gradient(circle at top right, rgba(27, 156, 98, 0.18), transparent 32%),
+        linear-gradient(180deg, #f8fbfd 0%, #eef4f8 100%);
+      color: #102033;
     }
-    body { font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial; background: var(--soft-bg); color: #0f172a; }
-    :focus-visible { outline: 3px solid rgba(16,185,129,0.16); outline-offset: 2px; border-radius: 8px; }
-    .brand-bg { background-color: var(--brand-emerald); }
-    .brand-hover:hover { background-color: var(--brand-emerald-600); }
-    .line-clamp-2 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+    :focus-visible {
+      outline: 3px solid rgba(77, 124, 255, 0.35);
+      outline-offset: 3px;
+      border-radius: 14px;
+    }
+    .site-shell { position: relative; isolation: isolate; }
+    .section-shell {
+      position: relative;
+      overflow: hidden;
+      border: 1px solid rgba(148, 163, 184, 0.18);
+      background: rgba(255, 255, 255, 0.78);
+      backdrop-filter: blur(18px);
+    }
+    .section-shell::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(135deg, rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0.25)),
+        radial-gradient(circle at top right, rgba(27, 156, 98, 0.12), transparent 24%);
+      pointer-events: none;
+    }
+    .section-shell > * { position: relative; z-index: 1; }
+    .btn-primary {
+      background: linear-gradient(135deg, #147d4f, #1b9c62);
+      color: #ffffff;
+      box-shadow: 0 16px 32px rgba(20, 125, 79, 0.26);
+    }
+    .btn-primary:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 22px 36px rgba(20, 125, 79, 0.3);
+    }
+    .btn-secondary {
+      border: 1px solid rgba(16, 32, 51, 0.1);
+      background: rgba(255, 255, 255, 0.9);
+      color: #102033;
+    }
+    .btn-secondary:hover {
+      background: #ffffff;
+      border-color: rgba(77, 124, 255, 0.32);
+      transform: translateY(-1px);
+    }
+    .btn-action {
+      transition: transform 180ms ease, box-shadow 180ms ease, background-color 180ms ease, border-color 180ms ease;
+    }
+    .hero-grid { grid-template-columns: minmax(0, 1.1fr) minmax(320px, 0.9fr); }
+    .grid-dots {
+      background-image:
+        linear-gradient(rgba(148, 163, 184, 0.11) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(148, 163, 184, 0.11) 1px, transparent 1px);
+      background-size: 24px 24px;
+    }
+    .chat-float { box-shadow: 0 20px 50px rgba(42, 86, 210, 0.24); }
+    details summary::-webkit-details-marker { display: none; }
+    @media (max-width: 1023px) { .hero-grid { grid-template-columns: 1fr; } }
   </style>
 </head>
 <body class="antialiased">
-
-  <!-- Top Info Bar -->
-  <div class="bg-emerald-700 text-white text-sm">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2 flex items-center justify-between">
-      <p class="flex items-center gap-2"><span class="text-lg">🧿</span> Zero setup • UPI-ready • Works on any phone</p>
-      <a href="#contact" class="underline hover:no-underline">Help?</a>
-    </div>
-  </div>
-
-  <!-- Navbar -->
-  <header class="bg-white/95 sticky top-0 z-50 border-b border-gray-200">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="flex h-16 items-center justify-between">
-        <a href="/" class="flex items-center gap-3">
-          <!-- Round logo -->
-          <img src="{{ url_for('static', filename='images/logo.png') }}" 
-               alt="SmartDukaan Logo" 
-               class="h-12 w-12 rounded-full border border-emerald-200 shadow-sm object-cover" />
-
-          <div>
-            <div class="text-lg font-extrabold tracking-tight">Smart<span class="text-emerald-700">Dukaan</span></div>
-            <div class="text-xs text-muted text-gray-500">QR ordering • Seller-first</div>
-          </div>
+  <div class="site-shell min-h-screen">
+    <div class="bg-ink text-white">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+        <p class="text-sm text-white/80">Zero setup, QR-ready ordering, and a seller-first workflow built for local stores.</p>
+        <a href="#contact" class="inline-flex items-center gap-2 text-sm font-semibold text-white hover:text-brand-200 transition-colors">
+          <span class="inline-flex h-7 w-7 items-center justify-center rounded-full bg-white/10">
+            <svg viewBox="0 0 24 24" fill="none" class="h-4 w-4" aria-hidden="true">
+              <path d="M4 6h16v12H4z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+              <path d="m4 7 8 6 8-6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </span>
+          Need help?
         </a>
-
-        <nav class="hidden md:flex items-center gap-6">
-          <a href="/" class="text-stone-700 hover:text-emerald-700">Home</a>
-          <a href="#why" class="text-stone-700 hover:text-emerald-700">Why Us</a>
-          <a href="#how" class="text-stone-700 hover:text-emerald-700">Process</a>
-          <a href="#pricing" class="text-stone-700 hover:text-emerald-700">Pricing</a>
-          <a href="#faq" class="text-stone-700 hover:text-emerald-700">FAQ</a>
-          <a href="/register" class="px-4 py-2 rounded-xl brand-bg text-white font-medium brand-hover shadow">Register Seller</a>
-          <a href="/login" class="px-4 py-2 rounded-xl bg-white text-emerald-700 font-medium border border-emerald-100 hover:bg-emerald-50">Seller Login</a>
-        </nav>
-
-        <button id="menu-btn" class="md:hidden text-2xl text-emerald-700" aria-label="Toggle Menu">☰</button>
       </div>
     </div>
 
-    <!-- Mobile Menu -->
-    <div id="menu" class="md:hidden hidden border-t bg-white">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 space-y-3">
-        <a href="/" class="block">Home</a>
-        <a href="#why" class="block">Why Us</a>
-        <a href="#how" class="block">Process</a>
-        <a href="#pricing" class="block">Pricing</a>
-        <a href="#faq" class="block">FAQ</a>
-        <a href="/register" class="block px-3 py-2 rounded-lg bg-emerald-700 text-white">Register Seller</a>
-        <a href="/login" class="block px-3 py-2 rounded-lg bg-emerald-50 text-emerald-700 border border-emerald-100">Seller Login</a>
-      </div>
-    </div>
-  </header>
-
-  <!-- Hero -->
-  <section class="relative overflow-hidden">
-    <div class="absolute inset-0 -z-10 bg-gradient-to-b from-white to-emerald-50"></div>
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14 md:py-20 grid md:grid-cols-2 gap-10 items-center">
-      <div>
-        <h1 class="text-4xl md:text-5xl font-extrabold leading-tight tracking-tight">
-          Local <span class="text-emerald-700">Dukaandaar</span> ke liye banaya gaya
-        </h1>
-        <p class="mt-4 text-lg text-stone-700 max-w-xl">QR scan karo — customer order kare — seller dashboard se manage karo. Pickup & delivery dono supported. Simple, fast aur phone-friendly.</p>
-        <div class="mt-6 flex flex-col sm:flex-row gap-3">
-          <a href="/register" class="inline-flex items-center justify-center px-6 py-3 rounded-xl brand-bg text-white font-semibold hover:bg-emerald-600 shadow">
-            🚀 Register as Seller
+    <header class="sticky top-0 z-50 border-b border-slate-200/70 bg-white/80 backdrop-blur-xl">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex h-20 items-center justify-between gap-4">
+          <a href="/" class="flex min-w-0 items-center gap-3">
+            <div class="relative shrink-0">
+              <div class="absolute inset-0 rounded-2xl bg-brand-500/20 blur-md"></div>
+              <img src="{{ url_for('static', filename='images/logo.png') }}" alt="SmartDukaan Logo" class="relative h-12 w-12 rounded-2xl border border-brand-100 bg-white object-cover shadow-soft" />
+            </div>
+            <div class="min-w-0">
+              <div class="text-lg font-extrabold tracking-tight text-ink">Smart<span class="text-brand-600">Dukaan</span></div>
+              <div class="text-xs font-medium text-slate-500">Modern QR commerce for neighborhood stores</div>
+            </div>
           </a>
-          <a href="/login" class="inline-flex items-center justify-center px-6 py-3 rounded-xl bg-white text-emerald-700 font-semibold border border-emerald-100 hover:bg-emerald-50">
-            🔑 Seller Login
+
+          <nav class="hidden items-center gap-6 lg:flex">
+            <a href="/" class="text-sm font-semibold text-slate-600 transition-colors hover:text-brand-700">Home</a>
+            <a href="{{ url_for('marketplace.marketplace') }}" class="text-sm font-semibold text-slate-600 transition-colors hover:text-brand-700">Marketplace</a>
+            <a href="#why" class="text-sm font-semibold text-slate-600 transition-colors hover:text-brand-700">Why Us</a>
+            <a href="#how" class="text-sm font-semibold text-slate-600 transition-colors hover:text-brand-700">Process</a>
+            <a href="#pricing" class="text-sm font-semibold text-slate-600 transition-colors hover:text-brand-700">Pricing</a>
+            <a href="#faq" class="text-sm font-semibold text-slate-600 transition-colors hover:text-brand-700">FAQ</a>
+          </nav>
+
+          <div class="hidden items-center gap-3 md:flex">
+            <a href="/chatbot" class="btn-action inline-flex h-11 w-11 items-center justify-center rounded-2xl border border-slate-200 bg-white text-slate-700 shadow-sm hover:border-accent-200 hover:text-accent-700" aria-label="Open AI chat" title="Open AI chat">
+              <svg viewBox="0 0 24 24" fill="none" class="h-5 w-5" aria-hidden="true">
+                <path d="M8 9.5h8M8 13h5m-6.5 7 2.8-2H18a3 3 0 0 0 3-3V7a3 3 0 0 0-3-3H6a3 3 0 0 0-3 3v8a3 3 0 0 0 3 3h.5V20Z" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </a>
+            <a href="/login" class="btn-action btn-secondary inline-flex items-center justify-center rounded-2xl px-5 py-3 text-sm font-bold">Seller Login</a>
+            <a href="/register" class="btn-action btn-primary inline-flex items-center justify-center rounded-2xl px-5 py-3 text-sm font-bold">Register Seller</a>
+          </div>
+
+          <button id="menu-btn" class="inline-flex h-11 w-11 items-center justify-center rounded-2xl border border-slate-200 bg-white text-ink shadow-sm transition hover:border-brand-200 hover:text-brand-700 md:hidden" aria-label="Toggle Menu" aria-expanded="false" aria-controls="menu">
+            <svg viewBox="0 0 24 24" fill="none" class="h-5 w-5" aria-hidden="true">
+              <path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <div id="menu" class="hidden border-t border-slate-200/80 bg-white/95 backdrop-blur-xl md:hidden">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5 space-y-3">
+          <a href="/" class="block rounded-2xl px-4 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50">Home</a>
+          <a href="{{ url_for('marketplace.marketplace') }}" class="block rounded-2xl px-4 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50">Marketplace</a>
+          <a href="#why" class="block rounded-2xl px-4 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50">Why Us</a>
+          <a href="#how" class="block rounded-2xl px-4 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50">Process</a>
+          <a href="#pricing" class="block rounded-2xl px-4 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50">Pricing</a>
+          <a href="#faq" class="block rounded-2xl px-4 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50">FAQ</a>
+          <a href="/chatbot" class="flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50">
+            <span class="inline-flex h-10 w-10 items-center justify-center rounded-2xl bg-accent-50 text-accent-700">
+              <svg viewBox="0 0 24 24" fill="none" class="h-5 w-5" aria-hidden="true">
+                <path d="M8 9.5h8M8 13h5m-6.5 7 2.8-2H18a3 3 0 0 0 3-3V7a3 3 0 0 0-3-3H6a3 3 0 0 0-3 3v8a3 3 0 0 0 3 3h.5V20Z" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </span>
+            AI Assistant
           </a>
-        </div>
-        <div class="mt-6 flex items-center gap-4 text-sm text-stone-700">
-          <div class="flex items-center gap-2"><span>🧾</span><span>No monthly fee</span></div>
-          <div class="flex items-center gap-2"><span>📦</span><span>Pickup & Delivery</span></div>
-          <div class="flex items-center gap-2"><span>📋</span><span>Orders in Dashboard</span></div>
+          <a href="/register" class="btn-action btn-primary block rounded-2xl px-4 py-3 text-center text-sm font-bold">Register Seller</a>
+          <a href="/login" class="btn-action btn-secondary block rounded-2xl px-4 py-3 text-center text-sm font-bold">Seller Login</a>
         </div>
       </div>
-      <div class="relative">
-  <img src="{{ url_for('static', filename='images/hero.png') }}" alt="QR Shop Mockup"
-       class="rounded-2xl shadow-xl border border-emerald-100 object-cover w-full" />
-</div>
+    </header>
 
+    <main>
+      <section class="relative overflow-hidden px-4 pt-8 sm:px-6 lg:px-8 lg:pt-10">
+        <div class="absolute inset-x-0 top-0 -z-10 h-[32rem] bg-gradient-to-b from-white via-brand-50/40 to-transparent"></div>
+        <div class="max-w-7xl mx-auto">
+          <div class="section-shell rounded-[2rem] shadow-lift">
+            <div class="grid hero-grid items-center gap-10 px-6 py-10 sm:px-8 lg:px-12 lg:py-14">
+              <div class="max-w-2xl">
+                <div class="inline-flex items-center gap-2 rounded-full border border-brand-100 bg-brand-50 px-4 py-2 text-sm font-semibold text-brand-800">
+                  <span class="inline-flex h-2.5 w-2.5 rounded-full bg-brand-500"></span>
+                  Seller-first QR ordering platform
+                </div>
+                <h1 class="mt-6 text-4xl font-extrabold leading-tight tracking-tight text-ink sm:text-5xl lg:text-6xl">
+                  Build a smarter digital storefront for your local
+                  <span class="text-brand-600">dukaan</span>.
+                </h1>
+                <p class="mt-6 max-w-xl text-lg leading-8 text-slate-600 sm:text-xl">
+                  Customers scan, browse, and place orders in seconds. Sellers manage products, pickups, and delivery requests from one simple dashboard.
+                </p>
+                <div class="mt-8 flex flex-col gap-3 sm:flex-row">
+                  <a href="/register" class="btn-action btn-primary inline-flex items-center justify-center rounded-2xl px-6 py-4 text-base font-extrabold">Start Selling Free</a>
+                  <a href="/login" class="btn-action btn-secondary inline-flex items-center justify-center rounded-2xl px-6 py-4 text-base font-extrabold">Seller Login</a>
+                </div>
+                <div class="mt-8 grid gap-3 sm:grid-cols-3">
+                  <div class="rounded-3xl border border-slate-200/70 bg-white/80 p-4 shadow-sm">
+                    <div class="text-2xl font-extrabold text-brand-700">5 min</div>
+                    <p class="mt-1 text-sm font-medium text-slate-600">To launch your QR-based store</p>
+                  </div>
+                  <div class="rounded-3xl border border-slate-200/70 bg-white/80 p-4 shadow-sm">
+                    <div class="text-2xl font-extrabold text-brand-700">0 Rs</div>
+                    <p class="mt-1 text-sm font-medium text-slate-600">Upfront setup cost for starters</p>
+                  </div>
+                  <div class="rounded-3xl border border-slate-200/70 bg-white/80 p-4 shadow-sm">
+                    <div class="text-2xl font-extrabold text-brand-700">24x7</div>
+                    <p class="mt-1 text-sm font-medium text-slate-600">Accessible from any modern phone</p>
+                  </div>
+                </div>
+              </div>
+
+              <div class="relative">
+                <div class="absolute -left-6 top-8 hidden h-24 w-24 rounded-full bg-accent-100 blur-2xl lg:block"></div>
+                <div class="absolute -right-6 bottom-10 hidden h-32 w-32 rounded-full bg-brand-200 blur-3xl lg:block"></div>
+                <div class="relative rounded-[2rem] border border-slate-200/70 bg-slate-950 p-3 shadow-lift">
+                  <div class="grid-dots rounded-[1.6rem] bg-slate-900 p-3">
+                    <img src="{{ url_for('static', filename='images/hero.png') }}" alt="SmartDukaan QR ordering experience" class="w-full rounded-[1.3rem] object-cover" />
+                  </div>
+                  <div class="absolute -left-4 bottom-8 rounded-3xl border border-white/70 bg-white/90 p-4 shadow-soft backdrop-blur md:-left-8">
+                    <p class="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">Order Flow</p>
+                    <p class="mt-1 text-base font-extrabold text-ink">Scan - Browse - Confirm</p>
+                    <p class="mt-1 text-sm text-slate-500">Fast checkout for walk-in and repeat customers.</p>
+                  </div>
+                  <div class="absolute -right-3 top-5 rounded-3xl border border-brand-100 bg-brand-50/95 p-4 shadow-soft backdrop-blur sm:right-4">
+                    <div class="flex items-center gap-3">
+                      <img src="{{ url_for('static', filename='images/logo.png') }}" alt="SmartDukaan badge" class="h-12 w-12 rounded-2xl border border-brand-100 object-cover" />
+                      <div>
+                        <p class="text-sm font-bold text-ink">Pickup + Delivery</p>
+                        <p class="text-xs text-slate-500">One setup for multiple order modes</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="border-t border-slate-200/70 px-6 py-6 sm:px-8 lg:px-12">
+              <div class="grid gap-4 md:grid-cols-3">
+                <div class="flex items-start gap-4 rounded-3xl bg-white/70 p-5">
+                  <span class="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-brand-50 text-brand-700">
+                    <svg viewBox="0 0 24 24" fill="none" class="h-5 w-5" aria-hidden="true">
+                      <path d="M4 7h16M7 4v6m10-6v6M6 11h12l1 7H5l1-7Z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                  </span>
+                  <div>
+                    <p class="font-bold text-ink">Simple ordering</p>
+                    <p class="mt-1 text-sm text-slate-600">Customers order directly from a phone without app installs.</p>
+                  </div>
+                </div>
+                <div class="flex items-start gap-4 rounded-3xl bg-white/70 p-5">
+                  <span class="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-accent-50 text-accent-700">
+                    <svg viewBox="0 0 24 24" fill="none" class="h-5 w-5" aria-hidden="true">
+                      <path d="M6 5h12a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2Zm3 11h6M9 12h6M9 8h6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                    </svg>
+                  </span>
+                  <div>
+                    <p class="font-bold text-ink">Central dashboard</p>
+                    <p class="mt-1 text-sm text-slate-600">Products, pricing, and order management stay in one workflow.</p>
+                  </div>
+                </div>
+                <div class="flex items-start gap-4 rounded-3xl bg-white/70 p-5">
+                  <span class="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-brand-50 text-brand-700">
+                    <svg viewBox="0 0 24 24" fill="none" class="h-5 w-5" aria-hidden="true">
+                      <path d="M7 17h10M5 7h9l3 4v6H5V7Zm12 2h2v4h-2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                  </span>
+                  <div>
+                    <p class="font-bold text-ink">Pickup and delivery</p>
+                    <p class="mt-1 text-sm text-slate-600">Support both order modes without separate tools or duplicate setup.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="nearby" class="px-4 py-16 sm:px-6 lg:px-8 lg:py-20">
+        <div class="max-w-7xl mx-auto">
+          <div class="section-shell rounded-[2rem] shadow-soft">
+            <div class="grid gap-10 px-6 py-8 sm:px-8 lg:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)] lg:px-10 lg:py-10">
+              <div>
+                <p class="text-sm font-extrabold uppercase tracking-[0.24em] text-brand-700">Nearby Stores</p>
+                <h2 class="mt-4 text-3xl font-extrabold tracking-tight text-ink sm:text-4xl">Discover shops close to your location.</h2>
+                <p class="mt-4 max-w-lg text-base leading-8 text-slate-600">
+                  Use your current location to surface nearby stores and open their pages directly. This keeps the discovery flow fast on both mobile and desktop.
+                </p>
+                <div class="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center">
+                  <button id="nearbyBtn" class="btn-action btn-primary inline-flex items-center justify-center gap-3 rounded-2xl px-6 py-4 text-base font-extrabold" type="button">
+                    <svg viewBox="0 0 24 24" fill="none" class="h-5 w-5" aria-hidden="true">
+                      <path d="M12 21s6-5.4 6-11a6 6 0 1 0-12 0c0 5.6 6 11 6 11Z" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/>
+                      <circle cx="12" cy="10" r="2.5" stroke="currentColor" stroke-width="1.9"/>
+                    </svg>
+                    Find Nearby Stores
+                  </button>
+                  <p id="locationMsg" class="hidden text-sm font-semibold text-slate-500">Fetching nearby stores...</p>
+                </div>
+                <div class="mt-8 grid gap-3 sm:grid-cols-3">
+                  <div class="rounded-3xl border border-slate-200/70 bg-white/80 p-4">
+                    <p class="text-sm font-bold text-ink">Location-aware</p>
+                    <p class="mt-1 text-sm text-slate-500">Find stores in your local delivery radius.</p>
+                  </div>
+                  <div class="rounded-3xl border border-slate-200/70 bg-white/80 p-4">
+                    <p class="text-sm font-bold text-ink">Direct entry</p>
+                    <p class="mt-1 text-sm text-slate-500">Open the store page without extra steps.</p>
+                  </div>
+                  <div class="rounded-3xl border border-slate-200/70 bg-white/80 p-4">
+                    <p class="text-sm font-bold text-ink">Responsive cards</p>
+                    <p class="mt-1 text-sm text-slate-500">Built to read cleanly on smaller screens.</p>
+                  </div>
+                </div>
+              </div>
+
+              <div>
+                <div class="rounded-[1.75rem] border border-slate-200/70 bg-white/85 p-4 shadow-soft sm:p-5">
+                  <div class="flex items-center justify-between gap-4 border-b border-slate-100 pb-4">
+                    <div>
+                      <p class="text-sm font-semibold text-slate-500">Live discovery panel</p>
+                      <p class="text-lg font-extrabold text-ink">Stores around you</p>
+                    </div>
+                    <span class="inline-flex rounded-full bg-brand-50 px-3 py-1 text-xs font-bold text-brand-700">10 KM radius</span>
+                  </div>
+                  <div id="nearbyStores" class="mt-5 grid hidden grid-cols-1 gap-4 sm:grid-cols-2"></div>
+                  <div id="nearbyPlaceholder" class="grid gap-4 sm:grid-cols-2">
+                    <div class="rounded-3xl border border-dashed border-slate-200 bg-slate-50/80 p-5">
+                      <p class="text-sm font-bold text-ink">Tap detect</p>
+                      <p class="mt-2 text-sm text-slate-500">We will use your location permission only to show relevant nearby shops.</p>
+                    </div>
+                    <div class="rounded-3xl border border-dashed border-slate-200 bg-slate-50/80 p-5">
+                      <p class="text-sm font-bold text-ink">Open store pages</p>
+                      <p class="mt-2 text-sm text-slate-500">Each result links directly to the selected store for faster ordering.</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="why" class="px-4 py-4 sm:px-6 lg:px-8">
+        <div class="max-w-7xl mx-auto">
+          <div class="grid gap-6 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]">
+            <div class="section-shell rounded-[2rem] p-6 shadow-soft sm:p-8">
+              <p class="text-sm font-extrabold uppercase tracking-[0.24em] text-brand-700">Why SmartDukaan</p>
+              <h2 class="mt-4 text-3xl font-extrabold tracking-tight text-ink sm:text-4xl">A clearer workflow for local commerce.</h2>
+              <p class="mt-4 max-w-xl text-base leading-8 text-slate-600">
+                SmartDukaan is designed to reduce friction for shop owners. The interface stays simple, customers move faster, and sellers do not need a heavy setup process.
+              </p>
+              <div class="mt-8 space-y-4">
+                <div class="rounded-3xl border border-slate-200/70 bg-white/75 p-5">
+                  <p class="text-sm font-extrabold uppercase tracking-[0.2em] text-slate-400">Built for sellers</p>
+                  <p class="mt-2 text-lg font-bold text-ink">Quick onboarding without technical overhead.</p>
+                </div>
+                <div class="rounded-3xl border border-slate-200/70 bg-white/75 p-5">
+                  <p class="text-sm font-extrabold uppercase tracking-[0.2em] text-slate-400">Built for buyers</p>
+                  <p class="mt-2 text-lg font-bold text-ink">Straightforward browsing and ordering from any phone browser.</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="grid gap-6 md:grid-cols-2">
+              <article class="section-shell rounded-[2rem] p-6 shadow-soft sm:p-7">
+                <div class="inline-flex h-14 w-14 items-center justify-center rounded-3xl bg-brand-50 text-brand-700">
+                  <svg viewBox="0 0 24 24" fill="none" class="h-6 w-6" aria-hidden="true">
+                    <path d="M5 7h14M7 11h10M9 15h6M4 5a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v14l-3-2-3 2-3-2-3 2-3-2V5Z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                </div>
+                <h3 class="mt-6 text-xl font-extrabold text-ink">Easy ordering</h3>
+                <p class="mt-3 text-base leading-7 text-slate-600">Customers can browse products and place orders from a clean QR-led experience.</p>
+              </article>
+
+              <article class="section-shell rounded-[2rem] p-6 shadow-soft sm:p-7">
+                <div class="inline-flex h-14 w-14 items-center justify-center rounded-3xl bg-accent-50 text-accent-700">
+                  <svg viewBox="0 0 24 24" fill="none" class="h-6 w-6" aria-hidden="true">
+                    <path d="M7 4h10M8 20h8M9 4l-1 16m8-16 1 16M5 9h14M6 15h12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                  </svg>
+                </div>
+                <h3 class="mt-6 text-xl font-extrabold text-ink">Seller dashboard</h3>
+                <p class="mt-3 text-base leading-7 text-slate-600">Manage products, pricing, and incoming orders from one consistent admin flow.</p>
+              </article>
+
+              <article class="section-shell rounded-[2rem] p-6 shadow-soft sm:p-7">
+                <div class="inline-flex h-14 w-14 items-center justify-center rounded-3xl bg-brand-50 text-brand-700">
+                  <svg viewBox="0 0 24 24" fill="none" class="h-6 w-6" aria-hidden="true">
+                    <path d="M3 8h13v8H3zM16 11h3l2 2v3h-5v-5ZM7 18.5a1.5 1.5 0 1 0 0 .01V18.5Zm10 0a1.5 1.5 0 1 0 0 .01V18.5Z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                </div>
+                <h3 class="mt-6 text-xl font-extrabold text-ink">Pickup and delivery</h3>
+                <p class="mt-3 text-base leading-7 text-slate-600">Support flexible fulfillment without splitting your operations into separate tools.</p>
+              </article>
+
+              <article class="section-shell rounded-[2rem] p-6 shadow-soft sm:p-7">
+                <div class="inline-flex h-14 w-14 items-center justify-center rounded-3xl bg-accent-50 text-accent-700">
+                  <svg viewBox="0 0 24 24" fill="none" class="h-6 w-6" aria-hidden="true">
+                    <path d="M12 3v18M7 7h6.2a2.8 2.8 0 0 1 0 5.6H10.8a2.8 2.8 0 0 0 0 5.6H17" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                  </svg>
+                </div>
+                <h3 class="mt-6 text-xl font-extrabold text-ink">Low-friction growth</h3>
+                <p class="mt-3 text-base leading-7 text-slate-600">Start without upfront setup fees and keep operations lightweight while scaling.</p>
+              </article>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="how" class="px-4 py-16 sm:px-6 lg:px-8 lg:py-20">
+        <div class="max-w-7xl mx-auto">
+          <div class="section-shell rounded-[2rem] p-6 shadow-soft sm:p-8 lg:p-10">
+            <div class="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+              <div>
+                <p class="text-sm font-extrabold uppercase tracking-[0.24em] text-brand-700">Process</p>
+                <h2 class="mt-4 text-3xl font-extrabold tracking-tight text-ink sm:text-4xl">A simple four-step launch path.</h2>
+              </div>
+              <a href="/register" class="btn-action btn-primary inline-flex items-center justify-center rounded-2xl px-6 py-4 text-base font-extrabold">Start Free</a>
+            </div>
+            <div class="mt-10 grid gap-6 lg:grid-cols-4">
+              <article class="rounded-[1.75rem] border border-slate-200/70 bg-white/85 p-6 shadow-sm">
+                <span class="inline-flex h-14 w-14 items-center justify-center rounded-3xl bg-brand-50 text-lg font-extrabold text-brand-700">01</span>
+                <h3 class="mt-5 text-xl font-extrabold text-ink">Register your shop</h3>
+                <p class="mt-3 text-sm leading-7 text-slate-600">Add your business basics and create your seller account.</p>
+              </article>
+              <article class="rounded-[1.75rem] border border-slate-200/70 bg-white/85 p-6 shadow-sm">
+                <span class="inline-flex h-14 w-14 items-center justify-center rounded-3xl bg-accent-50 text-lg font-extrabold text-accent-700">02</span>
+                <h3 class="mt-5 text-xl font-extrabold text-ink">Get your QR</h3>
+                <p class="mt-3 text-sm leading-7 text-slate-600">Generate the store QR and place it where customers can access it easily.</p>
+              </article>
+              <article class="rounded-[1.75rem] border border-slate-200/70 bg-white/85 p-6 shadow-sm">
+                <span class="inline-flex h-14 w-14 items-center justify-center rounded-3xl bg-brand-50 text-lg font-extrabold text-brand-700">03</span>
+                <h3 class="mt-5 text-xl font-extrabold text-ink">Customers scan and order</h3>
+                <p class="mt-3 text-sm leading-7 text-slate-600">They browse products, choose pickup or delivery, and confirm orders quickly.</p>
+              </article>
+              <article class="rounded-[1.75rem] border border-slate-200/70 bg-white/85 p-6 shadow-sm">
+                <span class="inline-flex h-14 w-14 items-center justify-center rounded-3xl bg-accent-50 text-lg font-extrabold text-accent-700">04</span>
+                <h3 class="mt-5 text-xl font-extrabold text-ink">Manage from dashboard</h3>
+                <p class="mt-3 text-sm leading-7 text-slate-600">Track orders, maintain products, and keep store operations organized.</p>
+              </article>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="pricing" class="px-4 py-4 sm:px-6 lg:px-8">
+        <div class="max-w-7xl mx-auto">
+          <div class="section-shell rounded-[2rem] p-6 shadow-soft sm:p-8 lg:p-10">
+            <div class="text-center">
+              <p class="text-sm font-extrabold uppercase tracking-[0.24em] text-brand-700">Pricing</p>
+              <h2 class="mt-4 text-3xl font-extrabold tracking-tight text-ink sm:text-4xl">Flexible plans for stores at every stage.</h2>
+              <p class="mt-4 text-base text-slate-600">Start free, validate demand, and move to expanded support only when needed.</p>
+            </div>
+            <div class="mt-10 grid gap-6 lg:grid-cols-3">
+              <article class="rounded-[1.8rem] border border-slate-200/80 bg-white/90 p-7 shadow-sm">
+                <p class="text-sm font-extrabold uppercase tracking-[0.2em] text-slate-400">Starter</p>
+                <h3 class="mt-3 text-2xl font-extrabold text-ink">For new shops</h3>
+                <p class="mt-5 text-4xl font-extrabold text-brand-700">Rs 0</p>
+                <ul class="mt-6 space-y-3 text-sm text-slate-600">
+                  <li>QR ordering</li>
+                  <li>Pickup and delivery</li>
+                  <li>Seller dashboard access</li>
+                </ul>
+                <a href="/register" class="btn-action btn-primary mt-8 inline-flex w-full items-center justify-center rounded-2xl px-5 py-4 text-sm font-extrabold">Get Started</a>
+              </article>
+
+              <article class="relative rounded-[1.8rem] border border-brand-200 bg-gradient-to-b from-brand-700 to-brand-800 p-7 text-white shadow-lift">
+                <span class="absolute right-5 top-5 rounded-full bg-white/12 px-3 py-1 text-xs font-extrabold uppercase tracking-[0.2em] text-white/90">Popular</span>
+                <p class="text-sm font-extrabold uppercase tracking-[0.2em] text-white/70">Growth</p>
+                <h3 class="mt-3 text-2xl font-extrabold">For busy stores</h3>
+                <p class="mt-5 text-4xl font-extrabold">Custom</p>
+                <ul class="mt-6 space-y-3 text-sm text-white/85">
+                  <li>Priority support</li>
+                  <li>Advanced reporting options</li>
+                  <li>Multi-staff management</li>
+                </ul>
+                <a href="/register" class="btn-action mt-8 inline-flex w-full items-center justify-center rounded-2xl border border-white/20 bg-white/10 px-5 py-4 text-sm font-extrabold text-white hover:bg-white/16">Try Free</a>
+              </article>
+
+              <article class="rounded-[1.8rem] border border-slate-200/80 bg-white/90 p-7 shadow-sm">
+                <p class="text-sm font-extrabold uppercase tracking-[0.2em] text-slate-400">Enterprise</p>
+                <h3 class="mt-3 text-2xl font-extrabold text-ink">Multi-branch chains</h3>
+                <p class="mt-5 text-4xl font-extrabold text-ink">Custom</p>
+                <ul class="mt-6 space-y-3 text-sm text-slate-600">
+                  <li>Dedicated account guidance</li>
+                  <li>Integrations and APIs</li>
+                  <li>SLA-oriented support</li>
+                </ul>
+                <a href="#contact" class="btn-action btn-secondary mt-8 inline-flex w-full items-center justify-center rounded-2xl px-5 py-4 text-sm font-extrabold">Talk to us</a>
+              </article>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="px-4 py-16 sm:px-6 lg:px-8 lg:py-20">
+        <div class="max-w-7xl mx-auto">
+          <div class="grid gap-6 lg:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)]">
+            <div class="section-shell rounded-[2rem] p-6 shadow-soft sm:p-8">
+              <p class="text-sm font-extrabold uppercase tracking-[0.24em] text-brand-700">Testimonials</p>
+              <h2 class="mt-4 text-3xl font-extrabold tracking-tight text-ink sm:text-4xl">What store owners value most.</h2>
+              <p class="mt-4 text-base leading-8 text-slate-600">The product experience stays focused on speed, clarity, and lower operational friction.</p>
+            </div>
+            <div class="grid gap-6 md:grid-cols-3">
+              <figure class="section-shell rounded-[2rem] p-6 shadow-soft">
+                <blockquote class="text-base leading-8 text-slate-700">"QR-based ordering made pickup and delivery much easier to manage during busy hours."</blockquote>
+                <figcaption class="mt-5 text-sm font-bold text-ink">Grocer, Pune</figcaption>
+              </figure>
+              <figure class="section-shell rounded-[2rem] p-6 shadow-soft">
+                <blockquote class="text-base leading-8 text-slate-700">"Adding products and guiding customers became simpler because the flow is very clear."</blockquote>
+                <figcaption class="mt-5 text-sm font-bold text-ink">Dairy, Nagpur</figcaption>
+              </figure>
+              <figure class="section-shell rounded-[2rem] p-6 shadow-soft">
+                <blockquote class="text-base leading-8 text-slate-700">"The setup works well for customers who want quick ordering and flexible payment choices."</blockquote>
+                <figcaption class="mt-5 text-sm font-bold text-ink">Kirana, Nashik</figcaption>
+              </figure>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="about" class="px-4 py-4 sm:px-6 lg:px-8">
+        <div class="max-w-7xl mx-auto">
+          <div class="section-shell rounded-[2rem] p-6 shadow-soft sm:p-8 lg:p-10">
+            <div class="grid gap-8 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] lg:items-center">
+              <div>
+                <p class="text-sm font-extrabold uppercase tracking-[0.24em] text-brand-700">About</p>
+                <h2 class="mt-4 text-3xl font-extrabold tracking-tight text-ink sm:text-4xl">Helping neighborhood shops sell with less friction.</h2>
+              </div>
+              <p class="text-base leading-8 text-slate-600">
+                SmartDukaan helps local shopkeepers move online through a practical QR-driven ordering system. Customers order quickly from the web, while sellers keep control through a clean dashboard that is easy to operate on everyday devices.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="faq" class="px-4 py-16 sm:px-6 lg:px-8 lg:py-20">
+        <div class="max-w-4xl mx-auto">
+          <div class="section-shell rounded-[2rem] p-6 shadow-soft sm:p-8 lg:p-10">
+            <div class="text-center">
+              <p class="text-sm font-extrabold uppercase tracking-[0.24em] text-brand-700">FAQ</p>
+              <h2 class="mt-4 text-3xl font-extrabold tracking-tight text-ink sm:text-4xl">Common questions, answered clearly.</h2>
+            </div>
+            <div class="mt-10 space-y-4" id="faq-list">
+              <details class="group rounded-[1.5rem] border border-slate-200/80 bg-white/90 p-5 shadow-sm">
+                <summary class="flex cursor-pointer list-none items-center justify-between gap-4 text-left text-lg font-bold text-ink">
+                  Do customers need to install an app?
+                  <span class="inline-flex h-10 w-10 items-center justify-center rounded-2xl bg-slate-50 text-slate-500 transition group-open:rotate-180 group-open:text-brand-700">+</span>
+                </summary>
+                <p class="mt-4 max-w-3xl text-base leading-8 text-slate-600">No. Orders can be placed directly from the browser after scanning the QR code, and sellers also manage operations from the web.</p>
+              </details>
+
+              <details class="group rounded-[1.5rem] border border-slate-200/80 bg-white/90 p-5 shadow-sm">
+                <summary class="flex cursor-pointer list-none items-center justify-between gap-4 text-left text-lg font-bold text-ink">
+                  How do payments work?
+                  <span class="inline-flex h-10 w-10 items-center justify-center rounded-2xl bg-slate-50 text-slate-500 transition group-open:rotate-180 group-open:text-brand-700">+</span>
+                </summary>
+                <p class="mt-4 max-w-3xl text-base leading-8 text-slate-600">The system supports UPI and cash workflows, and sellers can configure their preferred payment setup.</p>
+              </details>
+
+              <details class="group rounded-[1.5rem] border border-slate-200/80 bg-white/90 p-5 shadow-sm">
+                <summary class="flex cursor-pointer list-none items-center justify-between gap-4 text-left text-lg font-bold text-ink">
+                  Can delivery charges be configured?
+                  <span class="inline-flex h-10 w-10 items-center justify-center rounded-2xl bg-slate-50 text-slate-500 transition group-open:rotate-180 group-open:text-brand-700">+</span>
+                </summary>
+                <p class="mt-4 max-w-3xl text-base leading-8 text-slate-600">Yes. Delivery rules can be handled according to your store settings, including flat fee and percentage-based models.</p>
+              </details>
+            </div>
+          </div>
+        </div>
+      </section>
+      <section id="contact" class="px-4 py-4 sm:px-6 lg:px-8">
+        <div class="max-w-5xl mx-auto">
+          <div class="section-shell rounded-[2rem] p-6 shadow-soft sm:p-8 lg:p-10">
+            <div class="grid gap-8 lg:grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)]">
+              <div>
+                <p class="text-sm font-extrabold uppercase tracking-[0.24em] text-brand-700">Contact</p>
+                <h2 class="mt-4 text-3xl font-extrabold tracking-tight text-ink sm:text-4xl">Talk to the SmartDukaan team.</h2>
+                <p class="mt-4 text-base leading-8 text-slate-600">If you need help with onboarding, store setup, or platform questions, use the details here or reach the AI assistant from the floating chat button.</p>
+              </div>
+              <div class="grid gap-4 sm:grid-cols-2">
+                <div class="rounded-[1.5rem] border border-slate-200/80 bg-white/90 p-5">
+                  <p class="text-sm font-extrabold uppercase tracking-[0.2em] text-slate-400">Phone</p>
+                  <p class="mt-3 text-lg font-bold text-ink">+91 87677 53086</p>
+                  <a href="tel:+918767753086" class="mt-4 inline-flex text-sm font-bold text-brand-700 hover:text-brand-800">Call now</a>
+                </div>
+                <div class="rounded-[1.5rem] border border-slate-200/80 bg-white/90 p-5">
+                  <p class="text-sm font-extrabold uppercase tracking-[0.2em] text-slate-400">Email</p>
+                  <p class="mt-3 text-lg font-bold text-ink">smartdukaan77@gmail.com</p>
+                  <a href="mailto:support@smartdukaan.com" class="mt-4 inline-flex text-sm font-bold text-brand-700 hover:text-brand-800">Send email</a>
+                </div>
+                <div class="rounded-[1.5rem] border border-slate-200/80 bg-white/90 p-5 sm:col-span-2">
+                  <p class="text-sm font-extrabold uppercase tracking-[0.2em] text-slate-400">Address</p>
+                  <p class="mt-3 text-lg font-bold text-ink">Pune, Maharashtra, India</p>
+                  <div class="mt-5 flex flex-col gap-3 sm:flex-row">
+                    <a href="tel:+918767753086" class="btn-action btn-primary inline-flex items-center justify-center rounded-2xl px-5 py-4 text-sm font-extrabold">Call Now</a>
+                    <a href="mailto:support@smartdukaan.com" class="btn-action btn-secondary inline-flex items-center justify-center rounded-2xl px-5 py-4 text-sm font-extrabold">Email Us</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="px-4 py-16 sm:px-6 lg:px-8 lg:py-20">
+        <div class="max-w-7xl mx-auto">
+          <div class="rounded-[2rem] bg-gradient-to-r from-ink via-brand-800 to-brand-700 px-6 py-10 text-center text-white shadow-lift sm:px-10">
+            <p class="text-sm font-extrabold uppercase tracking-[0.28em] text-white/70">Ready to launch</p>
+            <h2 class="mt-4 text-3xl font-extrabold tracking-tight sm:text-4xl">Bring your store online with a more polished ordering experience.</h2>
+            <p class="mx-auto mt-4 max-w-2xl text-base leading-8 text-white/80">Start with a QR-first storefront, cleaner operations, and a UI customers can use immediately.</p>
+            <div class="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
+              <a href="/register" class="btn-action inline-flex items-center justify-center rounded-2xl bg-white px-6 py-4 text-sm font-extrabold text-ink hover:bg-brand-50">Register Now</a>
+              <a href="{{ url_for('marketplace.marketplace') }}" class="btn-action inline-flex items-center justify-center rounded-2xl border border-white/20 bg-white/10 px-6 py-4 text-sm font-extrabold text-white hover:bg-white/16">Explore Marketplace</a>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="border-t border-slate-200/80 bg-ink text-slate-300">
+      <div class="max-w-7xl mx-auto px-4 py-10 sm:px-6 lg:px-8">
+        <div class="grid gap-8 md:grid-cols-3">
+          <div>
+            <div class="text-2xl font-extrabold text-white">Smart<span class="text-brand-300">Dukaan</span></div>
+            <p class="mt-3 max-w-sm text-sm leading-7 text-slate-400">A QR-driven commerce platform for local stores that need a cleaner digital ordering workflow.</p>
+            <p class="mt-4 text-sm text-slate-500">Copyright 2025 SmartDukaan. All rights reserved.</p>
+          </div>
+          <div>
+            <h3 class="text-sm font-extrabold uppercase tracking-[0.2em] text-slate-500">Quick Links</h3>
+            <div class="mt-4 space-y-3 text-sm font-semibold">
+              <a href="#why" class="block transition-colors hover:text-white">Why Us</a>
+              <a href="#how" class="block transition-colors hover:text-white">How It Works</a>
+              <a href="#pricing" class="block transition-colors hover:text-white">Pricing</a>
+              <a href="#faq" class="block transition-colors hover:text-white">FAQ</a>
+            </div>
+          </div>
+          <div>
+            <h3 class="text-sm font-extrabold uppercase tracking-[0.2em] text-slate-500">Get Started</h3>
+            <div class="mt-4 flex flex-col gap-3 sm:flex-row md:flex-col lg:flex-row">
+              <a href="/register" class="btn-action btn-primary inline-flex items-center justify-center rounded-2xl px-5 py-3 text-sm font-extrabold">Register</a>
+              <a href="/login" class="btn-action inline-flex items-center justify-center rounded-2xl border border-white/10 bg-white/5 px-5 py-3 text-sm font-extrabold text-white hover:bg-white/10">Login</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </footer>
+
+    <div class="fixed inset-x-0 bottom-0 z-40 border-t border-slate-200/80 bg-white/92 p-3 backdrop-blur-xl md:hidden">
+      <div class="mx-auto flex max-w-7xl items-center justify-between gap-3">
+        <div class="min-w-0">
+          <p class="text-sm font-extrabold text-ink">Launch in minutes</p>
+          <p class="text-xs text-slate-500">QR orders, pickup, and delivery from one setup.</p>
+        </div>
+        <div class="flex shrink-0 gap-2">
+          <a href="/login" class="btn-action btn-secondary inline-flex items-center justify-center rounded-xl px-3 py-2 text-sm font-bold">Login</a>
+          <a href="/register" class="btn-action btn-primary inline-flex items-center justify-center rounded-xl px-3 py-2 text-sm font-bold">Register</a>
+        </div>
+      </div>
     </div>
-  </section>
 
-<!-- Nearby Stores -->
-<section id="nearby" class="py-14 md:py-20 bg-white">
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-
-    <h2 class="text-3xl md:text-4xl font-extrabold mb-4">
-      📍 Shops Near You
-    </h2>
-
-    <p class="text-stone-600 mb-6">
-      Find local stores around your location
-    </p>
-
-    <!-- BUTTON -->
-    <button id="nearbyBtn"
-            class="inline-flex items-center gap-2 px-8 py-3 rounded-xl bg-emerald-700 text-white font-semibold hover:bg-emerald-600 shadow-lg">
-      📍 Find Nearby Stores
-    </button>
-
-    <!-- STATUS TEXT -->
-    <p id="locationMsg" class="mt-4 text-stone-600 hidden">
-      Fetching nearby stores...
-    </p>
-
-    <!-- STORES LIST (hidden initially) -->
-    <div id="nearbyStores"
-         class="mt-10 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 hidden">
-    </div>
-
+    <a href="/chatbot" class="chat-float btn-action fixed bottom-24 right-4 z-50 inline-flex items-center gap-3 rounded-full bg-accent-700 px-4 py-3 text-sm font-extrabold text-white hover:bg-accent-500 sm:bottom-6 sm:right-6 sm:px-5" aria-label="Open AI chat assistant" title="Open AI chat assistant">
+      <span class="inline-flex h-11 w-11 items-center justify-center rounded-full bg-white/12">
+        <svg viewBox="0 0 24 24" fill="none" class="h-5 w-5" aria-hidden="true">
+          <path d="M8 9.5h8M8 13h5m-6.5 7 2.8-2H18a3 3 0 0 0 3-3V7a3 3 0 0 0-3-3H6a3 3 0 0 0-3 3v8a3 3 0 0 0 3 3h.5V20Z" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </span>
+      <span class="hidden sm:inline">Ask SmartDukaan AI</span>
+    </a>
   </div>
-</section>
 
+  <script>
+    const btn = document.getElementById("menu-btn");
+    const menu = document.getElementById("menu");
 
-  <!-- Why Choose -->
-  <section id="why" class="py-14 md:py-20">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <h2 class="text-3xl md:text-4xl font-extrabold text-center">Why Choose SmartDukaan?</h2>
-      <p class="text-center text-stone-700 mt-3 max-w-2xl mx-auto">Bharat ke local dukaano ke liye simple, tez aur bharosemand system.</p>
-      <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mt-10">
-        <div class="bg-white p-6 rounded-2xl shadow-sm border border-emerald-50 text-center hover:shadow-md">
-          <div class="text-4xl mb-2">🛒</div>
-          <h3 class="font-bold text-lg">Easy Ordering</h3>
-          <p class="text-stone-700">QR scan karke instant order placement.</p>
-        </div>
-        <div class="bg-white p-6 rounded-2xl shadow-sm border border-emerald-50 text-center hover:shadow-md">
-          <div class="text-4xl mb-2">📱</div>
-          <h3 class="font-bold text-lg">Seller Dashboard</h3>
-          <p class="text-stone-700">Products aur orders ek jagah manage karein.</p>
-        </div>
-        <div class="bg-white p-6 rounded-2xl shadow-sm border border-emerald-50 text-center hover:shadow-md">
-          <div class="text-4xl mb-2">🚚</div>
-          <h3 class="font-bold text-lg">Pickup & Delivery</h3>
-          <p class="text-stone-700">Customer ko flexible options.</p>
-        </div>
-        <div class="bg-white p-6 rounded-2xl shadow-sm border border-emerald-50 text-center hover:shadow-md">
-          <div class="text-4xl mb-2">💸</div>
-          <h3 class="font-bold text-lg">Zero Hassle</h3>
-          <p class="text-stone-700">No setup cost • Instant dukaan.</p>
-        </div>
-      </div>
+    if (btn && menu) {
+      btn.addEventListener("click", () => {
+        const isHidden = menu.classList.toggle("hidden");
+        btn.setAttribute("aria-expanded", String(!isHidden));
+      });
+    }
 
-      <!-- Trust / Stats -->
-      <div class="mt-10 grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
-        <div class="bg-white rounded-2xl p-5 border border-emerald-50 shadow-sm"><p class="text-3xl font-extrabold text-emerald-700">5 min</p><p class="text-stone-700 text-sm">mein shuru</p></div>
-        <div class="bg-white rounded-2xl p-5 border border-emerald-50 shadow-sm"><p class="text-3xl font-extrabold text-emerald-700">0₹</p><p class="text-stone-700 text-sm">setup fee</p></div>
-        <div class="bg-white rounded-2xl p-5 border border-emerald-50 shadow-sm"><p class="text-3xl font-extrabold text-emerald-700">UPI</p><p class="text-stone-700 text-sm">payments ready</p></div>
-        <div class="bg-white rounded-2xl p-5 border border-emerald-50 shadow-sm"><p class="text-3xl font-extrabold text-emerald-700">24×7</p><p class="text-stone-700 text-sm">self-serve</p></div>
-      </div>
-    </div>
-  </section>
-
-  <!-- How it works -->
-  <section id="how" class="bg-white/60 py-14 md:py-20">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <h2 class="text-3xl md:text-4xl font-extrabold text-center">Process</h2>
-      <div class="grid md:grid-cols-4 gap-6 mt-10">
-        <div class="bg-white rounded-2xl p-6 shadow-sm border border-emerald-50 text-center hover:shadow-md">
-          <span class="text-4xl">1️⃣</span>
-          <p class="mt-2 font-medium">Register Your Shop</p>
-          <p class="text-sm text-stone-700">Basic details bharen</p>
-        </div>
-        <div class="bg-white rounded-2xl p-6 shadow-sm border border-emerald-50 text-center hover:shadow-md">
-          <span class="text-4xl">2️⃣</span>
-          <p class="mt-2 font-medium">Get Unique QR</p>
-          <p class="text-sm text-stone-700">QR print karke lagayein</p>
-        </div>
-        <div class="bg-white rounded-2xl p-6 shadow-sm border border-emerald-50 text-center hover:shadow-md">
-          <span class="text-4xl">3️⃣</span>
-          <p class="mt-2 font-medium">Customer Scans & Orders</p>
-          <p class="text-sm text-stone-700">Pickup/Delivery choose karein</p>
-        </div>
-        <div class="bg-white rounded-2xl p-6 shadow-sm border border-emerald-50 text-center hover:shadow-md">
-          <span class="text-4xl">4️⃣</span>
-          <p class="mt-2 font-medium">Manage in Dashboard</p>
-          <p class="text-sm text-stone-700">Orders track karein</p>
-        </div>
-      </div>
-
-      <div class="text-center mt-8">
-        <a href="/register" class="inline-flex items-center justify-center px-6 py-3 rounded-xl brand-bg text-white font-semibold hover:bg-emerald-600 shadow">Start Free</a>
-      </div>
-    </div>
-  </section>
-
-  <!-- Pricing -->
-  <section id="pricing" class="py-14 md:py-20">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <h2 class="text-3xl md:text-4xl font-extrabold text-center">Simple Pricing</h2>
-      <p class="text-center text-stone-700 mt-3">Start free. Pay only when you grow. (Customisable)</p>
-      <div class="mt-10 grid md:grid-cols-3 gap-6">
-        <div class="bg-white rounded-2xl border border-emerald-50 p-6 shadow-sm">
-          <h3 class="text-xl font-bold">Starter</h3>
-          <p class="text-sm text-stone-700">Best for new shops</p>
-          <p class="mt-4 text-3xl font-extrabold text-emerald-700">₹0</p>
-          <ul class="mt-4 space-y-2 text-sm text-stone-800">
-            <li>• QR ordering</li>
-            <li>• Pickup & Delivery</li>
-            <li>• Seller dashboard</li>
-          </ul>
-          <a href="/register" class="mt-6 inline-flex w-full justify-center px-4 py-2 rounded-xl brand-bg text-white font-medium hover:bg-emerald-600">Get Started</a>
-        </div>
-        <div class="bg-white rounded-2xl border-2 border-emerald-700 p-6 shadow-md">
-          <h3 class="text-xl font-bold">Growth</h3>
-          <p class="text-sm text-stone-700">For busy stores</p>
-          <p class="mt-4 text-3xl font-extrabold">₹—</p>
-          <ul class="mt-4 space-y-2 text-sm text-stone-800">
-            <li>• Priority support</li>
-            <li>• Advanced reports</li>
-            <li>• Multi-staff access</li>
-          </ul>
-          <a href="/register" class="mt-6 inline-flex w-full justify-center px-4 py-2 rounded-xl brand-bg text-white font-medium hover:bg-emerald-600">Try Free</a>
-        </div>
-        <div class="bg-white rounded-2xl p-6 shadow-sm border border-emerald-50">
-          <h3 class="text-xl font-bold">Enterprise</h3>
-          <p class="text-sm text-stone-700">Multi-branch & chains</p>
-          <p class="mt-4 text-3xl font-extrabold">Custom</p>
-          <ul class="mt-4 space-y-2 text-sm text-stone-800">
-            <li>• Dedicated manager</li>
-            <li>• API & integrations</li>
-            <li>• SLA support</li>
-          </ul>
-          <a href="#contact" class="mt-6 inline-flex w-full justify-center px-4 py-2 rounded-xl bg-white border border-emerald-100 text-emerald-700 hover:bg-emerald-50">Talk to us</a>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Testimonials -->
-  <section class="bg-white py-14 md:py-20">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <h2 class="text-3xl md:text-4xl font-extrabold text-center">Dukaandaron ki suno</h2>
-      <div class="mt-10 grid md:grid-cols-3 gap-6">
-        <figure class="bg-emerald-50 border border-emerald-100 rounded-2xl p-6 shadow-sm">
-          <blockquote class="text-stone-900">“QR lagaya aur manages & delivery dono simple.”</blockquote>
-          <figcaption class="mt-4 text-sm text-stone-700">— Grocer, Pune</figcaption>
-        </figure>
-        <figure class="bg-emerald-50 border border-emerald-100 rounded-2xl p-6 shadow-sm">
-          <blockquote class="text-stone-900">“Inventory add karna asaan, aur customer ko options clear.”</blockquote>
-          <figcaption class="mt-4 text-sm text-stone-700">— Dairy, Nagpur</figcaption>
-        </figure>
-        <figure class="bg-emerald-50 border border-emerald-100 rounded-2xl p-6 shadow-sm">
-          <blockquote class="text-stone-900">“Cash/UPI dono chal jata, delivery charges bhi auto.”</blockquote>
-          <figcaption class="mt-4 text-sm text-stone-700">— Kirana, Nashik</figcaption>
-        </figure>
-      </div>
-    </div>
-  </section>
-
-  <!-- About -->
-  <section id="about" class="py-14 md:py-20 bg-emerald-50">
-    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-      <h2 class="text-3xl md:text-4xl font-extrabold mb-4">About SmartDukaan</h2>
-      <p class="text-lg text-stone-700">SmartDukaan local shopkeepers ko online laane ke liye bana hua ek simple QR system hai. Customer asaani se order kar sakte hain, aur seller ek clean dashboard se sab manage kar sakta hai.</p>
-    </div>
-  </section>
-
-  <!-- FAQ -->
-  <section id="faq" class="py-14 md:py-20">
-    <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
-      <h2 class="text-3xl md:text-4xl font-extrabold text-center">Questions? Humare paas answers hai.</h2>
-      <div class="mt-8 space-y-3" id="faq-list">
-        <details class="group bg-white border border-emerald-50 rounded-2xl p-5 open:shadow-sm">
-          <summary class="cursor-pointer font-semibold flex items-center justify-between">Kya app install karna padega?<span class="ml-2 text-xl group-open:rotate-180 transition">⌄</span></summary>
-          <p class="mt-3 text-stone-800">Nahi. QR scan se web par hi order hota hai. Seller dashboard bhi browser me.</p>
-        </details>
-        <details class="group bg-white border border-emerald-50 rounded-2xl p-5">
-          <summary class="cursor-pointer font-semibold flex items-center justify-between">Payment kaise hota hai?<span class="ml-2 text-xl group-open:rotate-180 transition">⌄</span></summary>
-          <p class="mt-3 text-stone-800">UPI/Cash dono support. Aap apna UPI ID daal sakte ho.</p>
-        </details>
-        <details class="group bg-white border border-emerald-50 rounded-2xl p-5">
-          <summary class="cursor-pointer font-semibold flex items-center justify-between">Delivery charges auto lagte hai?<span class="ml-2 text-xl group-open:rotate-180 transition">⌄</span></summary>
-          <p class="mt-3 text-stone-800">Haan, aapke rules ke hisaab se percentage ya flat fee lag sakti hai.</p>
-        </details>
-      </div>
-    </div>
-  </section>
-
-  <!-- Contact -->
-  <section id="contact" class="py-14 md:py-20 bg-emerald-50">
-    <div class="max-w-xl mx-auto px-4 sm:px-6 lg:px-8">
-      <h2 class="text-3xl md:text-4xl font-extrabold text-center">Contact Us</h2>
-      <div class="mt-8 bg-white p-6 rounded-2xl shadow-sm border border-emerald-50 space-y-4 text-center">
-        <p class="text-stone-800 text-lg">Get in touch with us:</p>
-        <p><strong>📞 Phone:</strong> +91 87677 53086</p>
-        <p><strong>📧 Email:</strong> smartdukaan77@gmail.com</p>
-        <p><strong>📍 Address:</strong> Pune, Maharashtra, India</p>
-        <div class="flex items-center justify-center gap-3 pt-2">
-          <a href="tel:+918767753086" class="px-4 py-2 rounded-xl brand-bg text-white hover:bg-emerald-600">Call Now</a>
-          <a href="mailto:support@smartdukaan.com" class="px-4 py-2 rounded-xl bg-white border border-emerald-50 text-emerald-700">Email</a>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- CTA -->
-  <section class="text-center py-16 bg-emerald-100">
-    <h2 class="text-3xl md:text-4xl font-extrabold mb-2">Apni Dukaan Online Lao! 🚀</h2>
-    <p class="mb-6 text-stone-900 text-lg">SmartDukaan ke sath free QR aur order management shuru karein.</p>
-    <a href="/register" class="bg-emerald-700 text-white px-8 py-3 rounded-xl font-semibold hover:bg-emerald-600 shadow-lg">Register Now</a>
-  </section>
-
-  <!-- Footer -->
-  <footer class="bg-emerald-900 text-emerald-100">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 grid md:grid-cols-3 gap-6">
-      <div>
-        <div class="text-2xl font-extrabold">Smart<span class="text-white">Dukaan</span></div>
-        <p class="mt-3 text-sm">© 2025 SmartDukaan. All rights reserved.</p>
-      </div>
-      <div>
-        <h4 class="font-semibold">Links</h4>
-        <ul class="mt-3 space-y-2 text-sm">
-          <li><a href="#why" class="hover:text-white">Why Us</a></li>
-          <li><a href="#how" class="hover:text-white">How it Works</a></li>
-          <li><a href="#pricing" class="hover:text-white">Pricing</a></li>
-          <li><a href="#faq" class="hover:text-white">FAQ</a></li>
-        </ul>
-      </div>
-      <div>
-        <h4 class="font-semibold">Get Started</h4>
-        <div class="mt-3 flex gap-3">
-          <a href="/register" class="px-4 py-2 rounded-xl brand-bg text-white">Register</a>
-          <a href="/login" class="px-4 py-2 rounded-xl bg-white text-emerald-700">Login</a>
-        </div>
-      </div>
-    </div>
-  </footer>
-
-  <!-- Sticky bottom bar (mobile) -->
-  <div class="md:hidden fixed bottom-0 inset-x-0 z-50 bg-white/95 backdrop-blur border-t border-emerald-100 p-3 flex items-center justify-between">
-    <div>
-      <p class="font-semibold text-sm">Start in 5 minutes</p>
-      <p class="text-xs text-stone-600">QR se orders • Pickup & Delivery</p>
-    </div>
-    <div class="flex gap-2">
-      <a href="/login" class="px-3 py-2 rounded-lg bg-white border border-emerald-100 text-emerald-700">Login</a>
-      <a href="/register" class="px-3 py-2 rounded-lg brand-bg text-white">Register</a>
-    </div>
-  </div>
-
-  <!-- Floating Action Button -->
-  <a href="#contact" class="fixed bottom-20 right-5 inline-flex items-center justify-center w-14 h-14 rounded-full shadow-lg bg-emerald-700 text-white text-2xl hover:bg-emerald-600" aria-label="Contact">✉️</a>
-
-<script>
-  // Mobile menu toggle
-  const btn = document.getElementById('menu-btn');
-  const menu = document.getElementById('menu');
-  if (btn && menu) {
-    btn.addEventListener('click', () => menu.classList.toggle('hidden'));
-  }
-
-  // Accessible details toggles
-  document.querySelectorAll('details summary').forEach(s => {
-    s.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter' || e.key === ' ') {
-        e.preventDefault();
-        s.parentElement.open = !s.parentElement.open;
-      }
+    document.querySelectorAll("details summary").forEach((summary) => {
+      summary.addEventListener("keydown", (event) => {
+        if (event.key === "Enter" || event.key === " ") {
+          event.preventDefault();
+          summary.parentElement.open = !summary.parentElement.open;
+        }
+      });
     });
-  });
 
-  // Nearby stores logic
-  const nearbyBtn = document.getElementById("nearbyBtn");
-  const locationMsg = document.getElementById("locationMsg");
-  const storesContainer = document.getElementById("nearbyStores");
+    const nearbyBtn = document.getElementById("nearbyBtn");
+    const locationMsg = document.getElementById("locationMsg");
+    const storesContainer = document.getElementById("nearbyStores");
+    const nearbyPlaceholder = document.getElementById("nearbyPlaceholder");
 
-  if (nearbyBtn) {
-    nearbyBtn.addEventListener("click", () => {
+    if (nearbyBtn) {
+      nearbyBtn.addEventListener("click", () => {
+        if (!navigator.geolocation) {
+          alert("Geolocation not supported");
+          return;
+        }
 
-      if (!navigator.geolocation) {
-        alert("Geolocation not supported");
+        nearbyBtn.disabled = true;
+        nearbyBtn.innerHTML = `
+          <svg viewBox="0 0 24 24" fill="none" class="h-5 w-5" aria-hidden="true">
+            <path d="M12 21s6-5.4 6-11a6 6 0 1 0-12 0c0 5.6 6 11 6 11Z" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/>
+            <circle cx="12" cy="10" r="2.5" stroke="currentColor" stroke-width="1.9"/>
+          </svg>
+          Detecting location...
+        `;
+        locationMsg.classList.remove("hidden");
+        locationMsg.textContent = "Detecting your location...";
+
+        navigator.geolocation.getCurrentPosition(
+          (pos) => {
+            const lat = pos.coords.latitude;
+            const lng = pos.coords.longitude;
+
+            fetch(`/nearby-stores?lat=${lat}&lng=${lng}`)
+              .then((res) => res.json())
+              .then((data) => renderNearbyStores(data.stores))
+              .catch(() => {
+                locationMsg.textContent = "Failed to load nearby stores.";
+                resetNearbyButton();
+              });
+          },
+          () => {
+            locationMsg.textContent = "Please allow location permission to see nearby stores.";
+            resetNearbyButton();
+          },
+          {
+            enableHighAccuracy: true,
+            timeout: 15000,
+            maximumAge: 0
+          }
+        );
+      });
+    }
+
+    function resetNearbyButton() {
+      nearbyBtn.disabled = false;
+      nearbyBtn.innerHTML = `
+        <svg viewBox="0 0 24 24" fill="none" class="h-5 w-5" aria-hidden="true">
+          <path d="M12 21s6-5.4 6-11a6 6 0 1 0-12 0c0 5.6 6 11 6 11Z" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/>
+          <circle cx="12" cy="10" r="2.5" stroke="currentColor" stroke-width="1.9"/>
+        </svg>
+        Find Nearby Stores
+      `;
+    }
+
+    function renderNearbyStores(stores) {
+      storesContainer.innerHTML = "";
+      storesContainer.classList.remove("hidden");
+
+      if (nearbyPlaceholder) {
+        nearbyPlaceholder.classList.add("hidden");
+      }
+
+      if (!stores || stores.length === 0) {
+        locationMsg.textContent = "No nearby stores found within 10 KM.";
+        resetNearbyButton();
         return;
       }
 
-      nearbyBtn.disabled = true;
-      nearbyBtn.innerText = "📍 Detecting location...";
-      locationMsg.classList.remove("hidden");
+      locationMsg.textContent = "Nearby stores:";
 
-      navigator.geolocation.getCurrentPosition(
-        (pos) => {
-          const lat = pos.coords.latitude;
-          const lng = pos.coords.longitude;
+      stores.forEach((store) => {
+        storesContainer.innerHTML += `
+          <a href="${store.store_url}" class="group rounded-[1.5rem] border border-slate-200/80 bg-slate-50/80 p-5 shadow-sm transition hover:-translate-y-1 hover:border-brand-200 hover:bg-white hover:shadow-soft">
+            <div class="flex items-start justify-between gap-3">
+              <div>
+                <h3 class="text-lg font-extrabold text-ink">${store.store_name}</h3>
+                <p class="mt-1 text-sm font-medium capitalize text-slate-500">${store.category}</p>
+              </div>
+              <span class="rounded-full bg-brand-50 px-3 py-1 text-xs font-bold text-brand-700">Nearby</span>
+            </div>
+            <p class="mt-5 text-sm font-bold text-brand-700">${store.distance} km away</p>
+            <p class="mt-3 text-sm font-semibold text-slate-600 transition group-hover:text-brand-700">Open store</p>
+          </a>
+        `;
+      });
 
-          console.log("CUSTOMER LAT:", lat);
-          console.log("CUSTOMER LNG:", lng);
-
-          fetch(`/nearby-stores?lat=${lat}&lng=${lng}`)
-            .then(res => res.json())
-            .then(data => renderNearbyStores(data.stores))
-            .catch(() => {
-              locationMsg.innerText = "Failed to load nearby stores.";
-            });
-        },
-        () => {
-          locationMsg.innerText =
-            "Please allow location permission to see nearby stores.";
-          nearbyBtn.disabled = false;
-          nearbyBtn.innerText = "📍 Find Nearby Stores";
-        },
-        {
-          enableHighAccuracy: true,
-          timeout: 15000,
-          maximumAge: 0
-        }
-      );
-    });
-  }
-
-  function renderNearbyStores(stores) {
-    storesContainer.innerHTML = "";
-    storesContainer.classList.remove("hidden");
-
-    if (!stores || stores.length === 0) {
-      locationMsg.innerText = "No nearby stores found within 10 KM.";
-      return;
+      resetNearbyButton();
     }
-
-    locationMsg.innerText = "Nearby stores:";
-
-    stores.forEach(store => {
-      storesContainer.innerHTML += `
-        <a href="${store.store_url}"
-          class="bg-emerald-50 border border-emerald-100 rounded-2xl p-5 shadow-sm hover:shadow-md transition block text-left">
-          <h3 class="text-lg font-bold text-stone-900">
-            ${store.store_name}
-          </h3>
-          <p class="text-sm text-stone-600 capitalize">
-            ${store.category}
-          </p>
-          <p class="mt-2 text-emerald-700 font-semibold text-sm">
-            📍 ${store.distance} km away
-          </p>
-        </a>
-      `;
-    });
-  }
-  navigator.geolocation.getCurrentPosition(
-  (pos) => {
-    const lat = pos.coords.latitude;
-    const lng = pos.coords.longitude;
-
-    console.log("Customer Lat:", lat);
-    console.log("Customer Lng:", lng);
-
-    fetch(`/nearby-stores?lat=${lat}&lng=${lng}`)
-      .then(res => res.json())
-      .then(data => renderNearbyStores(data.stores));
-  },
-  (err) => {
-    console.error("Location error:", err);
-  }
-);
-
-</script>
+  </script>
 </body>
 </html>

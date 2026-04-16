@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>SmartDukaan AI Chat</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  {% include 'partials/app_design.html' %}
+</head>
+<body class="flex flex-col h-screen">
+  {% set active_page = 'none' %}
+  {% include 'partials/app_nav_public.html' %}
+
+  <div id="chatBox" class="flex-1 overflow-y-auto p-4 space-y-3 max-w-5xl w-full mx-auto"></div>
+
+  <div class="p-4 bg-white/90 backdrop-blur border-t max-w-5xl w-full mx-auto flex gap-2 sticky bottom-0">
+    <input id="msg" placeholder="Ask about products, categories, nearby stores, delivery, pickup, or how SmartDukaan works" class="flex-1 p-3 border rounded-xl outline-none" />
+    <button onclick="sendMsg()" class="bg-emerald-700 text-white px-5 rounded-xl">Send</button>
+  </div>
+
+<script>
+let userLat = null;
+let userLng = null;
+
+navigator.geolocation.getCurrentPosition(pos => {
+  userLat = pos.coords.latitude;
+  userLng = pos.coords.longitude;
+  console.log("Location:", userLat, userLng);
+});
+
+function sendMsg(){
+  let input = document.getElementById("msg");
+  let msg = input.value;
+  if(!msg) return;
+  addMessage(msg, "user");
+  fetch("/chat", {
+    method: "POST",
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify({ message: msg, lat: userLat, lng: userLng })
+  })
+  .then(res => res.json())
+  .then(data => {
+    console.log("Response:", data);
+    if(data.type === "products"){
+      showProducts(data.data);
+    }
+    else if(data.type === "nearby_products"){
+      showNearbyProducts(data.data);
+    }
+    else if(data.type === "text"){
+      addMessage(data.data, "bot");
+    }
+    else {
+      addMessage("I can help with SmartDukaan shopping questions like products, nearby stores, delivery, pickup, and ordering.", "bot");
+    }
+  })
+  .catch(() => { addMessage("Server error", "bot"); });
+  input.value = "";
+}
+
+function addMessage(text, sender){
+  let chat = document.getElementById("chatBox");
+  let align = sender === "user" ? "text-right" : "text-left";
+  let bg = sender === "user" ? "bg-green-200" : "bg-white";
+  chat.innerHTML += `<div class="${align}"><div class="${bg} inline-block p-3 rounded-xl shadow max-w-xs">${text}</div></div>`;
+  chat.scrollTop = chat.scrollHeight;
+}
+
+function showProducts(products){
+  let chat = document.getElementById("chatBox");
+  let html = `<div class="text-left"><div class="bg-white p-3 rounded-xl shadow"><b>Products:</b><div class="grid grid-cols-2 gap-3 mt-3">`;
+  products.forEach(p => {
+    html += `<div class="bg-gray-100 p-2 rounded-lg"><p class="font-bold">${p.name}</p><p class="text-emerald-700">Rs${p.price}</p></div>`;
+  });
+  html += `</div></div></div>`;
+  chat.innerHTML += html;
+  chat.scrollTop = chat.scrollHeight;
+}
+
+function showNearbyProducts(products){
+  let chat = document.getElementById("chatBox");
+  let html = `<div class="text-left"><div class="bg-white p-3 rounded-xl shadow"><b>Nearby Stores:</b><div class="mt-3 space-y-3">`;
+  products.forEach(p => {
+    html += `<div class="bg-gray-100 p-3 rounded-lg"><p class="font-bold">${p.product}</p><p class="text-emerald-700">Rs${p.price}</p><p class="text-sm text-gray-600">${p.store}</p><p class="text-xs text-gray-500">${p.distance} km away</p><a href="/store/${p.store_id}" class="inline-block mt-2 text-sm bg-emerald-600 text-white px-3 py-1 rounded">View Store</a></div>`;
+  });
+  html += `</div></div></div>`;
+  chat.innerHTML += html;
+  chat.scrollTop = chat.scrollHeight;
+}
+</script>
+{% include 'partials/app_nav_script.html' %}
+</body>
+</html>

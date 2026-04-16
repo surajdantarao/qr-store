@@ -7,6 +7,7 @@
 
   <!-- TailwindCSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
+  {% include 'partials/app_design.html' %}
 
   <!-- Inter font (optional) -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700&display=swap" rel="stylesheet" />
@@ -14,9 +15,11 @@
     body { font-family: 'Inter', system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; }
   </style>
 </head>
-<body class="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+<body class="min-h-screen bg-gray-50 p-4">
+  {% set active_page = 'none' %}
+  {% include 'partials/app_nav_public.html' %}
 
-  <div class="w-full max-w-md">
+  <div class="w-full max-w-md" style="margin:48px auto 0;">
     <!-- Brand -->
     <div class="text-center mb-6">
       <a href="/" class="inline-flex items-center gap-2 text-emerald-600 font-extrabold text-2xl">
@@ -117,5 +120,7 @@
       toggle.setAttribute('aria-label', isText ? 'Show password' : 'Hide password');
     });
   </script>
+  {% include 'partials/app_chat_fab.html' %}
+  {% include 'partials/app_nav_script.html' %}
 </body>
 </html>

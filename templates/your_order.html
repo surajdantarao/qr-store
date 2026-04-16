@@ -2,390 +2,143 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Your Order - {{ store_name }}</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Your Order</title>
+  {% include 'partials/app_design.html' %}
   <style>
-    :root{
-      --bg:#f7f8fa;
-      --card:#ffffff;
-      --border:#e6e8ee;
-      --text:#1f2937;
-      --muted:#6b7280;
-      --primary:#10b981; /* green */
-      --primary-dark:#0ea371;
-      --danger:#d9534f;
-      --shadow:0 6px 20px rgba(0,0,0,.06);
-      --radius:14px;
+    :root {
+      --bg: #f6f8f7;
+      --card: #ffffff;
+      --text: #1f2937;
+      --muted: #6b7280;
+      --border: #d1fae5;
+      --primary: #059669;
+      --primary-dark: #047857;
+      --danger: #b91c1c;
     }
-    *{box-sizing:border-box}
-    html,body{margin:0;padding:0}
-    body{
-      font-family:system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, 'Helvetica Neue', Arial, 'Noto Sans', 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol';
-      color:var(--text);
-      background:var(--bg);
-      line-height:1.5;
+    * { box-sizing: border-box; }
+    body { margin: 0; color: var(--text); }
+    .wrap { max-width: 1040px; margin: 0 auto; padding: 24px 16px 96px; }
+    .title { font-size: clamp(28px, 5vw, 42px); font-weight: 800; margin: 0 0 10px; }
+    .subtitle { color: var(--muted); margin: 0 0 24px; }
+    .grid { display: grid; gap: 20px; }
+    @media (min-width: 900px) { .grid.review { grid-template-columns: 1.05fr 0.95fr; } }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 22px;
+      box-shadow: 0 12px 35px rgba(15, 23, 42, 0.06);
+      padding: 22px;
     }
-
-    .wrap{
-      max-width:960px;
-      margin:24px auto;
-      padding:16px;
-    }
-
-    .page-title{
-      font-size:clamp(20px, 4vw, 28px);
-      margin:0 0 18px;
-      font-weight:800;
-      letter-spacing:.3px;
-    }
-
-    /* Layout: summary + form */
-    .layout{
-      display:grid;
-      grid-template-columns:1fr;
-      gap:16px;
-    }
-    @media (min-width: 880px){
-      .layout{
-        grid-template-columns: 1fr 1fr;
-        gap:22px;
-      }
-    }
-
-    .card{
-      background:var(--card);
-      border:1px solid var(--border);
-      border-radius:var(--radius);
-      box-shadow:var(--shadow);
-      padding:18px;
-    }
-
-    .section-title{
-      margin:0 0 12px;
-      font-size:18px;
-      font-weight:700;
-    }
-
-    /* Order Summary */
-    .items{
-      display:flex;
-      flex-direction:column;
-      gap:10px;
-      margin:10px 0 14px;
-    }
-    .item{
-      display:flex;
-      justify-content:space-between;
-      gap:12px;
-      padding:10px 12px;
-      border:1px dashed var(--border);
-      border-radius:10px;
-      background:#fafafa;
-    }
-    .item-name{font-weight:600}
-    .item-sub{color:var(--muted);font-size:13px}
-
-    .row-total{
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      padding:12px 0 0;
-      margin-top:8px;
-      border-top:1px solid var(--border);
-      font-weight:800;
-      font-size:18px;
-      color:#059669;
-    }
-
-    .note{
-      margin-top:14px;
-      padding:12px;
-      background:#f3faf7;
-      border:1px solid #d7f0e6;
-      border-radius:10px;
-      color:#065f46;
-      font-size:14px;
-    }
-
-    /* Delivery charge / final total boxes */
-    #delivery-charge-box,
-    #final-total-box{
-      margin-top:10px;
-      padding:10px 12px;
-      border-radius:10px;
-      border:1px solid var(--border);
-      background:#fff7ed;
-      color:#b45309;
-      font-weight:700;
-    }
-    #final-total-box{
-      background:#ecfdf5;
-      color:#065f46;
-    }
-
-    /* Info box */
-    .info-grid{
-      display:grid;
-      grid-template-columns:1fr;
-      gap:8px;
-      font-size:14px;
-      color:var(--muted);
-    }
-    .info-item b{color:#374151}
-
-    /* Form */
-    form{
-      display:flex;
-      flex-direction:column;
-      gap:14px;
-    }
-    .field{
-      display:flex;
-      flex-direction:column;
-      gap:6px;
-    }
-    label{font-weight:600}
-    input[type="text"],
-    textarea{
-      width:100%;
-      padding:12px 14px;
-      border:1px solid var(--border);
-      border-radius:10px;
-      outline:none;
-      background:#fff;
-      transition:border .15s ease, box-shadow .15s ease;
-      font-size:15px;
-    }
-    input[type="text"]:focus,
-    textarea:focus{
-      border-color:#9ae6b4;
-      box-shadow:0 0 0 4px rgba(16,185,129,.12);
-    }
-    textarea{resize:vertical; min-height:100px}
-
-    .radio-group{
-      display:grid;
-      grid-template-columns:1fr;
-      gap:10px;
-    }
-    .radio{
-      display:flex; align-items:center; gap:10px;
-      padding:10px 12px; border:1px solid var(--border); border-radius:12px;
-      background:#fff;
-    }
-    .hint{
-      font-size:12px; color:var(--muted);
-    }
-
-    button[type="submit"]{
-      background:var(--primary);
-      color:#fff;
-      padding:12px 16px;
-      font-size:16px;
-      border:none;
-      border-radius:12px;
-      cursor:pointer;
-      font-weight:700;
-      letter-spacing:.2px;
-      transition:transform .05s ease, background .2s ease, box-shadow .2s ease;
-      box-shadow:0 8px 18px rgba(16,185,129,.18);
-    }
-    button[type="submit"]:hover{ background:var(--primary-dark) }
-    button[type="submit"]:active{ transform:translateY(1px) }
-
-    /* Make summary sticky on desktop for nice UX */
-    @media (min-width: 880px){
-      .sticky{
-        position:sticky;
-        top:16px;
-      }
-    }
-
-    /* Small helpers */
-    .muted{ color:var(--muted) }
-    .store{ color:#111827; font-weight:800 }
+    .section-title { margin: 0 0 14px; font-size: 20px; font-weight: 700; }
+    .item-row, .store-row { display: flex; justify-content: space-between; gap: 16px; padding: 14px 0; border-bottom: 1px solid #ecfdf5; }
+    .item-row:last-child, .store-row:last-child { border-bottom: none; }
+    .meta { color: var(--muted); font-size: 14px; }
+    .total { margin-top: 18px; display: flex; justify-content: space-between; font-size: 20px; font-weight: 800; color: var(--primary); }
+    .info { margin-bottom: 18px; padding: 14px 16px; border-radius: 16px; background: #ecfdf5; color: #065f46; border: 1px solid #bbf7d0; }
+    .error { margin-bottom: 18px; padding: 14px 16px; border-radius: 16px; background: #fef2f2; color: var(--danger); border: 1px solid #fecaca; }
+    label { display: block; margin-bottom: 6px; font-weight: 600; }
+    input[type="text"], textarea { width: 100%; padding: 12px 14px; border-radius: 14px; border: 1px solid #d1d5db; font-size: 15px; background: white; }
+    textarea { resize: vertical; min-height: 110px; }
+    .field { margin-bottom: 16px; }
+    .radio-group { display: grid; gap: 10px; margin-bottom: 16px; }
+    .radio { display: flex; align-items: center; gap: 10px; padding: 14px; border-radius: 14px; border: 1px solid #d1fae5; background: #f9fffb; }
+    button, .btn { display: inline-flex; align-items: center; justify-content: center; width: 100%; padding: 14px 18px; border: none; border-radius: 16px; background: var(--primary); color: white; font-weight: 700; text-decoration: none; cursor: pointer; }
+    button:hover, .btn:hover { background: var(--primary-dark); }
+    .store-card { border: 1px solid #d1fae5; border-radius: 18px; padding: 18px; background: #fbfffd; margin-bottom: 16px; }
+    .badge { display: inline-block; margin-top: 10px; padding: 6px 10px; border-radius: 999px; background: #ecfdf5; color: #065f46; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; }
+    .helper { color: var(--muted); font-size: 14px; margin-top: 8px; }
   </style>
 </head>
 <body>
-
+  {% set active_page = 'none' %}
+  {% include 'partials/app_nav_public.html' %}
   <div class="wrap">
-    <h2 class="page-title">Your Order for <span class="store">{{ store_name }}</span></h2>
-
-    <div class="layout">
-      <!-- LEFT: Order Summary -->
-      <section class="card sticky">
-        <h3 class="section-title">🧾 Order Summary</h3>
-
-        <div class="items">
-          {% for item in items %}
-          <div class="item">
+    {% if mode == 'placed' %}
+      <h1 class="title">Your Order Is Confirmed</h1>
+      <p class="subtitle">Orders are grouped by assigned store so each seller sees only their own items.</p>
+      <div class="info">{{ message }}</div>
+      {% if order_group_code %}
+        <p class="helper">Order Group: <strong>{{ order_group_code }}</strong></p>
+      {% endif %}
+      {% for grouped_order in grouped_orders %}
+        <section class="store-card">
+          <div class="store-row">
             <div>
-              <div class="item-name">{{ item.name }}</div>
-              <div class="item-sub">Qty: {{ item.quantity }}</div>
+              <h2 class="section-title" style="margin:0;">{{ grouped_order.store_name }}</h2>
+              <div class="meta">Order ID #{{ grouped_order.order_id }} · Status: {{ grouped_order.status }}</div>
             </div>
-            <div>₹{{ item.subtotal }}</div>
+            <div style="font-weight:800; color:var(--primary);">Rs {{ grouped_order.total }}</div>
           </div>
+          {% for item in grouped_order["items"] %}
+            <div class="item-row">
+              <div>
+                <div style="font-weight:700;">{{ item.name }}</div>
+                <div class="meta">Qty {{ item.quantity }} × Rs {{ item.price }}</div>
+              </div>
+              <div style="font-weight:700;">Rs {{ item.subtotal }}</div>
+            </div>
           {% endfor %}
+        </section>
+      {% endfor %}
+      <div class="card">
+        <div class="total">
+          <span>Grand Total</span>
+          <span>Rs {{ grand_total }}</span>
         </div>
-
-        <div class="row-total">
-          <span>Total</span>
-          <span>₹<span id="base-total">{{ total }}</span></span>
-        </div>
-
-        <div id="delivery-charge-box" style="display:none;">
-          Delivery Charge: ₹<span id="delivery-charge">0</span>
-        </div>
-
-        <div class="row-total" id="final-total-box" style="display:none;">
-          <span>Final Total</span>
-          <span>₹<span id="final-total">{{ total }}</span></span>
-        </div>
-
-        <div class="note">
-          Tip: Delivery is enabled for orders ₹100 and above. Charges are auto-calculated if you select delivery.
-        </div>
-      </section>
-
-      <!-- RIGHT: Info + Form -->
-      <section class="card">
-        <h3 class="section-title">📦 Delivery & Contact</h3>
-
-        <div class="info-grid">
-          <div class="info-item"><b>Delivery Type:</b> Choose Pickup or Delivery</div>
-          <div class="info-item"><b>Contact:</b> Enter a valid 10-digit phone</div>
-          <div class="info-item"><b>Payment:</b> Cash/Card/UPI at delivery or pickup (COD)</div>
-        </div>
-
-        <form action="{{ url_for('submit_order') }}" method="POST" onsubmit="return validateForm()">
-          <!-- Hidden fields (unchanged) -->
-          <!-- Hidden fields -->
-            <input type="hidden" name="slug" value="{{ slug }}">
-            <input type="hidden" name="items_json" value='{{ items | tojson | safe }}'>
-            <input type="hidden" name="total_price" id="hidden-final-total" value="{{ total }}">
-
-
-          <!-- Delivery type -->
-          <div class="field">
-            <label>Delivery Type</label>
-            <div class="radio-group">
-              <label class="radio">
-                <input type="radio" name="delivery_type" value="pickup" required>
-                <span>Pickup Byself</span>
-              </label>
-              <label class="radio">
-                <input type="radio" name="delivery_type" value="delivery" required id="delivery-option">
-                <span>Delivery</span>
-              </label>
+        <a class="btn" href="{{ url_for('marketplace.marketplace') }}" style="margin-top:18px;">Continue Shopping</a>
+      </div>
+    {% else %}
+      <h1 class="title">Review Your Order</h1>
+      <p class="subtitle">Confirm your items and submit. The system will automatically split the order across stores if one store cannot fulfill everything.</p>
+      {% if error_message %}
+        <div class="error">{{ error_message }}</div>
+      {% endif %}
+      <div class="grid review">
+        <section class="card">
+          <h2 class="section-title">Order Summary</h2>
+          {% for item in items %}
+            <div class="item-row">
+              <div>
+                <div style="font-weight:700;">{{ item.name }}</div>
+                <div class="meta">Qty {{ item.quantity }} × Rs {{ item.price }}</div>
+              </div>
+              <div style="font-weight:700;">Rs {{ item.subtotal }}</div>
             </div>
-            <div class="hint">Delivery available only for orders ₹100 and above.</div>
+          {% endfor %}
+          <div class="total">
+            <span>Total</span>
+            <span>Rs {{ total }}</span>
           </div>
-
-          <!-- Phone -->
-          <div class="field">
-            <label for="phone">Phone Number</label>
-            <input
-              type="text"
-              name="phone"
-              id="phone"
-              required
-              maxlength="10"
-              minlength="10"
-              pattern="\d{10}"
-              title="Enter valid 10-digit phone number"
-              placeholder="e.g. 9876543210"
-            >
-          </div>
-
-          <!-- Address -->
-          <div class="field">
-            <label for="address">Address (if delivery)</label>
-            <textarea
-              name="address"
-              id="address"
-              rows="3"
-              placeholder="House/Flat, Street, Landmark, City"
-            ></textarea>
-          </div>
-
-          <button type="submit">Confirm Order</button>
-        </form>
-      </section>
-    </div>
+          <div class="info" style="margin-top:18px;">This order may be fulfilled from multiple nearby stores if a single store does not have every item.</div>
+        </section>
+        <section class="card">
+          <h2 class="section-title">Customer Details</h2>
+          <form method="POST" action="{{ url_for('orders.submit_order') }}">
+            <input type="hidden" name="slug" value="{{ slug or '' }}">
+            <input type="hidden" name="items_json" value='{{ raw_items|tojson }}'>
+            <div class="field">
+              <label for="phone">Phone Number</label>
+              <input id="phone" type="text" name="phone" maxlength="10" required placeholder="Enter 10-digit mobile number">
+            </div>
+            <div class="field">
+              <label>Delivery Mode</label>
+              <div class="radio-group">
+                <label class="radio"><input type="radio" name="delivery_type" value="pickup" checked><span>Pickup from assigned store(s)</span></label>
+                <label class="radio"><input type="radio" name="delivery_type" value="delivery"><span>Delivery</span></label>
+              </div>
+            </div>
+            <div class="field">
+              <label for="address">Address</label>
+              <textarea id="address" name="address" placeholder="Required for delivery orders"></textarea>
+            </div>
+            <button type="submit">Place Order</button>
+          </form>
+        </section>
+      </div>
+    {% endif %}
   </div>
-
-  <!-- ---------- JS (unchanged logic) ---------- -->
-  <script>
-    const total = parseFloat(document.getElementById("base-total").textContent);
-    const deliveryOption = document.getElementById("delivery-option");
-    const deliveryChargeBox = document.getElementById("delivery-charge-box");
-    const deliveryChargeSpan = document.getElementById("delivery-charge");
-    const finalTotalBox = document.getElementById("final-total-box");
-    const finalTotalSpan = document.getElementById("final-total");
-    const hiddenFinalTotal = document.getElementById("hidden-final-total");
-    const addressBox = document.getElementById("address");
-
-    if (total < 100) {
-      deliveryOption.disabled = true;
-      deliveryOption.title = "Delivery available only for orders ₹100 and above.";
-    }
-
-    function calculateDeliveryCharge() {
-      let charge = 0;
-      if (total >= 100 && total < 500) {
-        charge = Math.round(total * 0.10);
-      } else if (total >= 500) {
-        charge = Math.round(total * 0.05);
-      }
-      return charge;
-    }
-
-    function updateFinalTotalView() {
-      const deliverySelected = document.querySelector('input[name="delivery_type"]:checked')?.value === "delivery";
-
-      if (deliverySelected && total >= 100) {
-        const deliveryCharge = calculateDeliveryCharge();
-        deliveryChargeBox.style.display = "block";
-        finalTotalBox.style.display = "block";
-        deliveryChargeSpan.textContent = deliveryCharge;
-        finalTotalSpan.textContent = total + deliveryCharge;
-        hiddenFinalTotal.value = total + deliveryCharge;
-      } else {
-        deliveryChargeBox.style.display = "none";
-        finalTotalBox.style.display = "none";
-        deliveryChargeSpan.textContent = "0";
-        finalTotalSpan.textContent = total;
-        hiddenFinalTotal.value = total;
-      }
-
-      addressBox.required = deliverySelected;
-    }
-
-    document.querySelectorAll('input[name="delivery_type"]').forEach(radio => {
-      radio.addEventListener("change", updateFinalTotalView);
-    });
-
-    function validateForm() {
-      const phone = document.getElementById("phone").value.trim();
-      const invalidNumbers = [
-        "1234567890","9999999999","8888888888","7777777777",
-        "6666666666","5555555555","4444444444","3333333333",
-        "2222222222","1111111111","0000000000"
-      ];
-      if (invalidNumbers.includes(phone)) {
-        alert("Please enter a valid phone number.");
-        return false;
-      }
-
-      const deliverySelected = document.querySelector('input[name="delivery_type"]:checked')?.value === "delivery";
-      const address = addressBox.value.trim();
-
-      if (deliverySelected && address.length < 5) {
-        alert("Please enter a valid address for delivery.");
-        return false;
-      }
-      return true;
-    }
-  </script>
+  {% include 'partials/app_chat_fab.html' %}
+  {% include 'partials/app_nav_script.html' %}
 </body>
 </html>

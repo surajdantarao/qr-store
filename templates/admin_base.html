@@ -15,64 +15,16 @@
     integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH"
     crossorigin="anonymous"
   />
+  {% include 'partials/app_design.html' %}
 
   {% block extra_head %}{% endblock %}
 </head>
 <body class="bg-light">
-
-  <!-- Top Navbar -->
-  <header class="mb-4">
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
-      <div class="container-fluid">
-        <a class="navbar-brand fw-semibold" href="{{ url_for('admin_dashboard') }}">Admin</a>
-
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#adminNav" aria-controls="adminNav" aria-expanded="false" aria-label="Toggle navigation">
-          <span class="navbar-toggler-icon"></span>
-        </button>
-
-        <div class="collapse navbar-collapse" id="adminNav">
-          <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-
-            <li class="nav-item">
-              <a class="nav-link {% if request.endpoint == 'admin_dashboard' %}active{% endif %}"
-                 href="{{ url_for('admin_dashboard') }}">
-                Dashboard
-              </a>
-            </li>
-
-            <li class="nav-item">
-              <a class="nav-link {% if request.endpoint == 'admin_master_products' %}active{% endif %}"
-                 href="{{ url_for('admin_master_products') }}">
-                Master Products
-              </a>
-            </li>
-
-            {# Add more admin links here when you have routes, e.g.:
-            <li class="nav-item">
-              <a class="nav-link {% if request.endpoint == 'admin_sellers' %}active{% endif %}"
-                 href="{{ url_for('admin_sellers') }}">
-                Sellers
-              </a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link {% if request.endpoint == 'admin_orders' %}active{% endif %}"
-                 href="{{ url_for('admin_orders') }}">
-                Orders
-              </a>
-            </li>
-            #}
-          </ul>
-
-          <div class="d-flex">
-            <a class="btn btn-outline-light btn-sm" href="{{ url_for('admin_logout') }}">Logout</a>
-          </div>
-        </div>
-      </div>
-    </nav>
-  </header>
+  {% set active_page = 'admin-dashboard' %}
+  {% include 'partials/app_nav_admin.html' %}
 
   <!-- Main -->
-  <main class="container">
+  <main class="container py-4">
 
     {# Flash messages #}
     {% with messages = get_flashed_messages(with_categories=true) %}
@@ -105,6 +57,8 @@
     crossorigin="anonymous"
   ></script>
 
+  {% include 'partials/app_chat_fab.html' %}
+  {% include 'partials/app_nav_script.html' %}
   {% block scripts %}{% endblock %}
 </body>
 </html>

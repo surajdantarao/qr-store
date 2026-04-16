@@ -1,0 +1,282 @@
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --app-ink: #102033;
+    --app-muted: #64748b;
+    --app-line: rgba(148, 163, 184, 0.18);
+    --app-brand-50: #eefbf5;
+    --app-brand-100: #d7f5e6;
+    --app-brand-500: #1b9c62;
+    --app-brand-600: #147d4f;
+    --app-brand-700: #0f6340;
+    --app-accent-50: #f3f7ff;
+    --app-accent-200: #cddcff;
+    --app-accent-700: #2a56d2;
+    --app-shadow-soft: 0 16px 40px rgba(16, 32, 51, 0.08);
+    --app-shadow-lift: 0 24px 60px rgba(10, 27, 46, 0.16);
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: "Manrope", sans-serif;
+    background:
+      radial-gradient(circle at top left, rgba(77, 124, 255, 0.16), transparent 28%),
+      radial-gradient(circle at top right, rgba(27, 156, 98, 0.18), transparent 32%),
+      linear-gradient(180deg, #f8fbfd 0%, #eef4f8 100%);
+    color: var(--app-ink);
+  }
+
+  :focus-visible {
+    outline: 3px solid rgba(77, 124, 255, 0.35);
+    outline-offset: 3px;
+    border-radius: 14px;
+  }
+
+  .app-nav {
+    position: sticky;
+    top: 0;
+    z-index: 80;
+    border-bottom: 1px solid rgba(226, 232, 240, 0.82);
+    background: rgba(255, 255, 255, 0.82);
+    backdrop-filter: blur(18px);
+  }
+
+  .app-nav-inner {
+    width: min(100%, 1240px);
+    margin: 0 auto;
+    padding: 0 16px;
+    min-height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+  }
+
+  .app-brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 0;
+    text-decoration: none;
+    color: inherit;
+  }
+
+  .app-brand-badge {
+    position: relative;
+    flex-shrink: 0;
+    width: 48px;
+    height: 48px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 18px;
+    border: 1px solid var(--app-brand-100);
+    background: #fff;
+    box-shadow: var(--app-shadow-soft);
+    overflow: hidden;
+  }
+
+  .app-brand-badge img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .app-brand-copy {
+    min-width: 0;
+  }
+
+  .app-brand-title {
+    font-size: 18px;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    color: var(--app-ink);
+  }
+
+  .app-brand-title span {
+    color: var(--app-brand-600);
+  }
+
+  .app-brand-subtitle {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--app-muted);
+  }
+
+  .app-nav-links {
+    display: none;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .app-nav-link,
+  .app-nav-pill {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 42px;
+    padding: 0 16px;
+    border-radius: 999px;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 800;
+    transition: transform 180ms ease, background-color 180ms ease, color 180ms ease, border-color 180ms ease;
+  }
+
+  .app-nav-link {
+    color: #475569;
+  }
+
+  .app-nav-link:hover,
+  .app-nav-link.is-active {
+    background: var(--app-brand-50);
+    color: var(--app-brand-700);
+    transform: translateY(-1px);
+  }
+
+  .app-nav-pill {
+    border: 1px solid rgba(16, 32, 51, 0.08);
+    background: rgba(255, 255, 255, 0.92);
+    color: var(--app-ink);
+    box-shadow: var(--app-shadow-soft);
+  }
+
+  .app-nav-pill:hover {
+    transform: translateY(-1px);
+    border-color: rgba(77, 124, 255, 0.3);
+  }
+
+  .app-nav-cta {
+    background: linear-gradient(135deg, var(--app-brand-600), var(--app-brand-500));
+    color: #fff;
+    border: 0;
+    box-shadow: 0 16px 32px rgba(20, 125, 79, 0.26);
+  }
+
+  .app-nav-cta:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 22px 36px rgba(20, 125, 79, 0.3);
+  }
+
+  .app-icon-btn {
+    width: 42px;
+    min-width: 42px;
+    padding: 0;
+  }
+
+  .app-menu-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    border: 1px solid rgba(148, 163, 184, 0.22);
+    border-radius: 16px;
+    background: #fff;
+    color: var(--app-ink);
+    box-shadow: var(--app-shadow-soft);
+  }
+
+  .app-mobile-menu {
+    display: none;
+    width: min(100%, 1240px);
+    margin: 0 auto;
+    padding: 0 16px 14px;
+  }
+
+  .app-mobile-menu.is-open {
+    display: grid;
+    gap: 10px;
+  }
+
+  .app-mobile-menu .app-nav-link,
+  .app-mobile-menu .app-nav-pill {
+    justify-content: flex-start;
+    border-radius: 16px;
+    min-height: 48px;
+  }
+
+  .app-chat-fab {
+    position: fixed;
+    right: 18px;
+    bottom: 22px;
+    z-index: 90;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    min-height: 60px;
+    padding: 0 18px 0 10px;
+    border-radius: 999px;
+    background: var(--app-accent-700);
+    color: #fff;
+    text-decoration: none;
+    box-shadow: 0 20px 50px rgba(42, 86, 210, 0.24);
+    transition: transform 180ms ease, background-color 180ms ease;
+  }
+
+  .app-chat-fab:hover {
+    transform: translateY(-1px);
+    background: #2249b8;
+  }
+
+  .app-chat-fab-icon {
+    width: 40px;
+    height: 40px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.14);
+  }
+
+  .app-chat-fab-label {
+    font-size: 13px;
+    font-weight: 800;
+    letter-spacing: -0.01em;
+  }
+
+  .app-surface {
+    position: relative;
+    overflow: hidden;
+    border: 1px solid var(--app-line);
+    background: rgba(255, 255, 255, 0.82);
+    backdrop-filter: blur(18px);
+    box-shadow: var(--app-shadow-soft);
+  }
+
+  .app-surface::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(135deg, rgba(255, 255, 255, 0.72), rgba(255, 255, 255, 0.28)),
+      radial-gradient(circle at top right, rgba(27, 156, 98, 0.12), transparent 24%);
+    pointer-events: none;
+  }
+
+  .app-surface > * {
+    position: relative;
+    z-index: 1;
+  }
+
+  @media (min-width: 900px) {
+    .app-nav-links { display: flex; }
+    .app-menu-btn,
+    .app-mobile-menu { display: none !important; }
+  }
+
+  @media (max-width: 899px) {
+    .app-chat-fab {
+      right: 14px;
+      bottom: 18px;
+      padding-right: 14px;
+    }
+
+    .app-chat-fab-label {
+      display: none;
+    }
+  }
+</style>

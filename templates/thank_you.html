@@ -4,26 +4,17 @@
   <meta charset="UTF-8">
   <title>Thank You</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  {% include 'partials/app_design.html' %}
   <style>
-    body {
-      font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
-      background: #f9fafb;
-      color: #1f2937;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      min-height: 100vh;
-      margin: 0;
-      padding: 16px;
-    }
     .card {
-      background: white;
-      border-radius: 14px;
-      box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+      background: rgba(255, 255, 255, 0.9);
+      border-radius: 28px;
+      box-shadow: var(--app-shadow-lift);
       padding: 24px 28px;
       max-width: 420px;
       text-align: center;
       width: 100%;
+      border: 1px solid var(--app-line);
     }
     h2 {
       color: #10b981;
@@ -36,28 +27,27 @@
       color: #374151;
     }
     .highlight {
-      font-weight: 600;
+      font-weight: 700;
       color: #111827;
     }
     .btn {
       display: inline-block;
       margin-top: 18px;
       padding: 12px 22px;
-      background: #10b981;
+      background: linear-gradient(135deg, #147d4f, #1b9c62);
       color: white;
-      font-weight: 600;
+      font-weight: 800;
       font-size: 15px;
       border: none;
-      border-radius: 10px;
+      border-radius: 16px;
       cursor: pointer;
       text-decoration: none;
-      transition: background 0.2s ease, transform 0.05s ease;
+      transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
+      box-shadow: 0 16px 32px rgba(20, 125, 79, 0.24);
     }
     .btn:hover {
       background: #059669;
-    }
-    .btn:active {
-      transform: translateY(1px);
+      transform: translateY(-1px);
     }
     .emoji {
       font-size: 28px;
@@ -66,17 +56,19 @@
   </style>
 </head>
 <body>
-  <div class="card">
-    <div class="emoji">✅</div>
-    <h2>Order Placed Successfully</h2>
-    <p>Store: <span class="highlight">{{ store_name }}</span></p>
-    <p>Order ID: <span class="highlight">#{{ order_id }}</span></p>
-    <p>We will contact you shortly.</p>
-
-    <!-- Track Order Button -->
-    <a href="{{ url_for('track_order', order_id=order_id) }}" class="btn">
-      🚚 Track Order
-    </a>
-  </div>
+  {% set active_page = 'none' %}
+  {% include 'partials/app_nav_public.html' %}
+  <main style="min-height:calc(100vh - 80px);display:flex;align-items:center;justify-content:center;padding:24px 16px;">
+    <div class="card app-surface">
+      <div class="emoji">✅</div>
+      <h2>Order Placed Successfully</h2>
+      <p>Store: <span class="highlight">{{ store_name }}</span></p>
+      <p>Order ID: <span class="highlight">#{{ order_id }}</span></p>
+      <p>We will contact you shortly.</p>
+      <a href="{{ url_for('track_order', order_id=order_id) }}" class="btn">Track Order</a>
+    </div>
+  </main>
+  {% include 'partials/app_chat_fab.html' %}
+  {% include 'partials/app_nav_script.html' %}
 </body>
 </html>

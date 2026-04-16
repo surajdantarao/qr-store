@@ -216,7 +216,7 @@
     </div>
 
     <!-- Hidden form -->
-    <form id="orderForm" method="POST" action="{{ url_for('order_review') }}" class="hidden" aria-hidden="true">
+    <form id="orderForm" method="POST" action="{{ url_for('orders.order_review') }}" class="hidden" aria-hidden="true">
       <input type="hidden" name="slug" id="storeSlugInput"/>
       <input type="hidden" name="items_json" id="itemsInput"/>
     </form>

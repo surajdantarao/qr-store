@@ -21,8 +21,22 @@ class User(db.Model):
     reset_token = db.Column(db.String(100), nullable=True)
     store_lat = db.Column(db.Float)
     store_lng = db.Column(db.Float)
+    latitude = db.Column(db.Float, nullable=True)
+    longitude = db.Column(db.Float, nullable=True)
     # RELATIONSHIPS 
-    products = db.relationship('Product', backref='seller', lazy=True, cascade="all, delete-orphan")
+    products = db.relationship(
+        'Product',
+        back_populates='seller',
+        lazy=True,
+        cascade="all, delete-orphan",
+        foreign_keys='Product.seller_id'
+    )
+    store_inventory = db.relationship(
+        'Product',
+        back_populates='store',
+        lazy=True,
+        foreign_keys='Product.store_id'
+    )
     orders = db.relationship('Order', backref='seller', lazy=True, cascade="all, delete-orphan")
     settings = db.relationship('StoreSettings', backref='seller', lazy=True, uselist=False, cascade="all, delete-orphan")
     offers = db.relationship('Offer', backref='seller', lazy=True, cascade="all, delete-orphan")
@@ -32,17 +46,23 @@ class Product(db.Model):
     __tablename__ = 'product'
     id = db.Column(db.Integer, primary_key=True)
     seller_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    store_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=True)
     product_name = db.Column(db.String(100), nullable=False)
+    category = db.Column(db.String(50), nullable=True)
     price = db.Column(db.Float, nullable=False)
     quantity = db.Column(db.Integer, nullable=False)
+    is_available = db.Column(db.Boolean, nullable=False, default=True)
     unit = db.Column(db.String(50), nullable=True)
     image_url = db.Column(db.String(255), nullable=False)
+    seller = db.relationship('User', back_populates='products', foreign_keys=[seller_id])
+    store = db.relationship('User', back_populates='store_inventory', foreign_keys=[store_id])
 
 # Order table for customer orders
 class Order(db.Model):
     __tablename__ = 'order'
     id = db.Column(db.Integer, primary_key=True)
     seller_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    group_code = db.Column(db.String(64), nullable=True, index=True)
     customer_phone = db.Column(db.String(10), nullable=False)
     customer_address = db.Column(db.String(255), nullable=True)
     delivery_mode = db.Column(db.String(50), nullable=True)
@@ -58,9 +78,13 @@ class OrderItem(db.Model):
     __tablename__ = 'order_item'
     id = db.Column(db.Integer, primary_key=True)
     order_id = db.Column(db.Integer, db.ForeignKey('order.id'), nullable=False)
+    product_id = db.Column(db.Integer, db.ForeignKey('product.id'), nullable=True)
+    store_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=True)
     product_name = db.Column(db.String(100), nullable=False)
     quantity = db.Column(db.Integer, nullable=False)
     unit_price = db.Column(db.Float, nullable=False)
+    product = db.relationship('Product', lazy=True)
+    store = db.relationship('User', lazy=True)
 
 # Store settings table
 class StoreSettings(db.Model):

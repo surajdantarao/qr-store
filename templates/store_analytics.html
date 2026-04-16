@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Store Analytics</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            ink: "#102033",
+            brand: {
+              50: "#eefbf5",
+              100: "#d7f5e6",
+              200: "#afe8c9",
+              500: "#1b9c62",
+              600: "#147d4f",
+              700: "#0f6340",
+              800: "#104f35"
+            },
+            accent: {
+              50: "#f3f7ff",
+              100: "#e5eeff",
+              200: "#cddcff",
+              500: "#4d7cff",
+              700: "#2a56d2"
+            }
+          },
+          boxShadow: {
+            soft: "0 16px 40px rgba(16, 32, 51, 0.08)",
+            lift: "0 24px 60px rgba(10, 27, 46, 0.16)"
+          }
+        }
+      }
+    };
+  </script>
+  <style>
+    :root { color-scheme: light; }
+    body {
+      font-family: "Manrope", sans-serif;
+      background:
+        radial-gradient(circle at top left, rgba(77, 124, 255, 0.16), transparent 28%),
+        radial-gradient(circle at top right, rgba(27, 156, 98, 0.18), transparent 32%),
+        linear-gradient(180deg, #f8fbfd 0%, #eef4f8 100%);
+      color: #102033;
+    }
+    .surface {
+      position: relative;
+      overflow: hidden;
+      border: 1px solid rgba(148, 163, 184, 0.18);
+      background: rgba(255, 255, 255, 0.82);
+      backdrop-filter: blur(18px);
+    }
+    .surface::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(135deg, rgba(255,255,255,0.7), rgba(255,255,255,0.24)),
+        radial-gradient(circle at top right, rgba(27, 156, 98, 0.12), transparent 24%);
+      pointer-events: none;
+    }
+    .surface > * {
+      position: relative;
+      z-index: 1;
+    }
+    .btn-action {
+      transition: transform 180ms ease, box-shadow 180ms ease, background-color 180ms ease, border-color 180ms ease;
+    }
+    .btn-action:hover {
+      transform: translateY(-1px);
+    }
+  </style>
+</head>
+<body class="antialiased">
+  <div class="min-h-screen">
+    <header class="sticky top-0 z-50 border-b border-slate-200/70 bg-white/80 backdrop-blur-xl">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex h-20 items-center justify-between gap-4">
+          <div class="flex items-center gap-3">
+            <div class="flex h-12 w-12 items-center justify-center rounded-2xl border border-brand-100 bg-brand-50 text-brand-700 shadow-soft">
+              <span class="text-sm font-extrabold">SD</span>
+            </div>
+            <div>
+              <div class="text-lg font-extrabold tracking-tight text-ink">Store Analytics</div>
+              <div class="text-xs font-medium text-slate-500">Performance overview for your store</div>
+            </div>
+          </div>
+
+          <div class="flex items-center gap-3">
+            <a href="/dashboard" class="btn-action inline-flex items-center justify-center rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-extrabold text-slate-700 hover:border-brand-200 hover:text-brand-700">Back to Dashboard</a>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
+      <section class="surface rounded-[2rem] px-6 py-8 shadow-lift sm:px-8">
+        <div class="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+          <div>
+            <p class="text-sm font-extrabold uppercase tracking-[0.22em] text-brand-700">Analytics Overview</p>
+            <h1 class="mt-3 text-3xl font-extrabold tracking-tight text-ink sm:text-4xl">Understand sales, orders, and product movement at a glance.</h1>
+            <p class="mt-4 max-w-3xl text-base leading-8 text-slate-600">This page uses clean placeholder analytics data to present a polished seller-facing performance dashboard without changing backend logic.</p>
+          </div>
+          <div class="flex flex-wrap gap-3">
+            <div class="rounded-2xl border border-slate-200/80 bg-white/85 px-4 py-3 text-sm font-bold text-slate-600">Range: Last 7 Days</div>
+            <div class="rounded-2xl border border-brand-100 bg-brand-50 px-4 py-3 text-sm font-bold text-brand-700">Updated just now</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="mt-8 grid gap-6 md:grid-cols-2 xl:grid-cols-4">
+        <article class="surface rounded-[2rem] p-6 shadow-soft">
+          <p class="text-sm font-extrabold uppercase tracking-[0.2em] text-slate-400">Total Sales</p>
+          <p class="mt-3 text-3xl font-extrabold text-ink">Rs 18,420</p>
+          <p class="mt-2 text-sm font-semibold text-brand-700">+14.8% vs previous period</p>
+        </article>
+        <article class="surface rounded-[2rem] p-6 shadow-soft">
+          <p class="text-sm font-extrabold uppercase tracking-[0.2em] text-slate-400">Orders</p>
+          <p class="mt-3 text-3xl font-extrabold text-ink">126</p>
+          <p class="mt-2 text-sm font-semibold text-brand-700">Average 18 orders per day</p>
+        </article>
+        <article class="surface rounded-[2rem] p-6 shadow-soft">
+          <p class="text-sm font-extrabold uppercase tracking-[0.2em] text-slate-400">Top Product</p>
+          <p class="mt-3 text-3xl font-extrabold text-ink">Milk 500ml</p>
+          <p class="mt-2 text-sm font-semibold text-slate-500">32 units sold this week</p>
+        </article>
+        <article class="surface rounded-[2rem] p-6 shadow-soft">
+          <p class="text-sm font-extrabold uppercase tracking-[0.2em] text-slate-400">Conversion</p>
+          <p class="mt-3 text-3xl font-extrabold text-ink">67%</p>
+          <p class="mt-2 text-sm font-semibold text-slate-500">Strong order completion trend</p>
+        </article>
+      </section>
+
+      <section class="mt-8 grid gap-6 xl:grid-cols-[minmax(0,1.2fr)_minmax(0,0.8fr)]">
+        <div class="surface rounded-[2rem] p-6 shadow-soft">
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-sm font-extrabold uppercase tracking-[0.2em] text-brand-700">Sales Overview</p>
+              <h2 class="mt-2 text-2xl font-extrabold text-ink">Daily revenue trend</h2>
+            </div>
+            <span class="rounded-full bg-accent-50 px-3 py-1 text-xs font-bold text-accent-700">Line Chart</span>
+          </div>
+          <div class="mt-6 h-[320px]">
+            <canvas id="salesChart"></canvas>
+          </div>
+        </div>
+
+        <div class="surface rounded-[2rem] p-6 shadow-soft">
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-sm font-extrabold uppercase tracking-[0.2em] text-brand-700">Order Mix</p>
+              <h2 class="mt-2 text-2xl font-extrabold text-ink">Fulfillment split</h2>
+            </div>
+            <span class="rounded-full bg-brand-50 px-3 py-1 text-xs font-bold text-brand-700">Doughnut</span>
+          </div>
+          <div class="mt-6 h-[320px]">
+            <canvas id="orderMixChart"></canvas>
+          </div>
+        </div>
+      </section>
+
+      <section class="mt-8 grid gap-6 xl:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)]">
+        <div class="surface rounded-[2rem] p-6 shadow-soft">
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-sm font-extrabold uppercase tracking-[0.2em] text-brand-700">Product Performance</p>
+              <h2 class="mt-2 text-2xl font-extrabold text-ink">Top-selling products</h2>
+            </div>
+            <span class="rounded-full bg-brand-50 px-3 py-1 text-xs font-bold text-brand-700">Bar Chart</span>
+          </div>
+          <div class="mt-6 h-[320px]">
+            <canvas id="productChart"></canvas>
+          </div>
+        </div>
+
+        <div class="surface rounded-[2rem] p-6 shadow-soft">
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-sm font-extrabold uppercase tracking-[0.2em] text-brand-700">Seller Notes</p>
+              <h2 class="mt-2 text-2xl font-extrabold text-ink">Actionable insights</h2>
+            </div>
+          </div>
+          <div class="mt-6 grid gap-4">
+            <div class="rounded-[1.5rem] border border-slate-200/80 bg-white/85 p-5">
+              <p class="text-sm font-bold text-slate-500">Peak demand</p>
+              <p class="mt-2 text-lg font-extrabold text-ink">Friday and Saturday show the strongest order volume.</p>
+            </div>
+            <div class="rounded-[1.5rem] border border-slate-200/80 bg-white/85 p-5">
+              <p class="text-sm font-bold text-slate-500">Top category</p>
+              <p class="mt-2 text-lg font-extrabold text-ink">Dairy items lead weekly revenue contribution.</p>
+            </div>
+            <div class="rounded-[1.5rem] border border-slate-200/80 bg-white/85 p-5">
+              <p class="text-sm font-bold text-slate-500">Operational suggestion</p>
+              <p class="mt-2 text-lg font-extrabold text-ink">Restock top three products early in the day to reduce missed sales.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    const chartDefaults = {
+      plugins: {
+        legend: {
+          labels: {
+            color: "#475569",
+            font: {
+              family: "Manrope",
+              weight: "700"
+            }
+          }
+        }
+      },
+      scales: {
+        x: {
+          ticks: {
+            color: "#64748b",
+            font: { family: "Manrope", weight: "700" }
+          },
+          grid: { display: false }
+        },
+        y: {
+          ticks: {
+            color: "#64748b",
+            font: { family: "Manrope", weight: "700" }
+          },
+          grid: { color: "rgba(148, 163, 184, 0.16)" }
+        }
+      }
+    };
+
+    new Chart(document.getElementById("salesChart"), {
+      type: "line",
+      data: {
+        labels: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
+        datasets: [{
+          label: "Sales (Rs)",
+          data: [1800, 2250, 2100, 2460, 3010, 3560, 3240],
+          borderColor: "#1b9c62",
+          backgroundColor: "rgba(27, 156, 98, 0.12)",
+          fill: true,
+          tension: 0.35,
+          borderWidth: 3,
+          pointRadius: 4,
+          pointBackgroundColor: "#147d4f"
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        ...chartDefaults
+      }
+    });
+
+    new Chart(document.getElementById("orderMixChart"), {
+      type: "doughnut",
+      data: {
+        labels: ["Pickup", "Delivery", "In-store scan"],
+        datasets: [{
+          data: [42, 34, 24],
+          backgroundColor: ["#1b9c62", "#4d7cff", "#cddcff"],
+          borderWidth: 0
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            position: "bottom",
+            labels: {
+              color: "#475569",
+              font: { family: "Manrope", weight: "700" }
+            }
+          }
+        }
+      }
+    });
+
+    new Chart(document.getElementById("productChart"), {
+      type: "bar",
+      data: {
+        labels: ["Milk", "Bread", "Rice", "Eggs", "Biscuits"],
+        datasets: [{
+          label: "Units Sold",
+          data: [32, 24, 18, 16, 12],
+          backgroundColor: ["#1b9c62", "#4d7cff", "#79d4a5", "#cddcff", "#104f35"],
+          borderRadius: 12,
+          borderSkipped: false
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        ...chartDefaults,
+        plugins: {
+          legend: { display: false }
+        }
+      }
+    });
+  </script>
+</body>
+</html>

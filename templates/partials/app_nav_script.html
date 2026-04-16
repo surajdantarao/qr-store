@@ -1,0 +1,12 @@
+<script>
+  (function () {
+    const toggle = document.querySelector("[data-app-menu-toggle]");
+    const menu = document.getElementById("appMobileMenu");
+    if (!toggle || !menu) return;
+
+    toggle.addEventListener("click", () => {
+      const isOpen = menu.classList.toggle("is-open");
+      toggle.setAttribute("aria-expanded", String(isOpen));
+    });
+  })();
+</script>

@@ -12,6 +12,8 @@ from collections import defaultdict
 from PIL import Image
 from dotenv import load_dotenv
 from math import radians, cos, sin, asin, sqrt
+from routes.marketplace import marketplace_bp
+from routes.orders import orders_bp
 import io
 import csv
 import json
@@ -22,15 +24,20 @@ import qrcode
 import random
 import requests
 import math
+from flask import request, jsonify
+import boto3
+
 # --------------------------------------------------------------------------------
 # Flask App Setup
 # --------------------------------------------------------------------------------
+
 
 app = Flask(__name__, static_folder='static')
 app.secret_key = os.environ.get("SECRET_KEY", "fallback-secret")
 # MySQL Database configuration - 'hyperstore' naam ko restore kiya gaya hai
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get("DATABASE_URL")
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+db.init_app(app)
 
 # .env file load karo
 load_dotenv()
@@ -57,9 +64,267 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['OFFERS_FOLDER'] = OFFERS_FOLDER
 app.config['QR_CODE_FOLDER'] = QR_CODE_FOLDER
 app.config['MASTER_FOLDER'] = MASTER_FOLDER
+app.register_blueprint(marketplace_bp)
+app.register_blueprint(orders_bp)
 # --------------------------------------------------------------------------------
 # Helper Functions
 # --------------------------------------------------------------------------------
+lex_client = boto3.client(
+    'lexv2-runtime',
+    region_name='us-west-2'
+)
+
+# 🔥 FAQ
+FAQ = {
+    "delivery": "Delivery charges are 10% for orders ₹100–499 and 5% above ₹500.",
+    "pickup": "You can pick up your order directly from the store.",
+    "payment": "You can pay using UPI or cash on delivery.",
+    "nearby": "Click on 'Find Nearby Stores' to see shops around you.",
+    "store": "Our platform allows local shopkeepers to sell products via QR code.",
+    "order": "You can place an order by selecting items and clicking 'Your Order'.",
+    "login": "Sellers can login using their registered phone number.",
+}
+
+def get_faq_answer(msg):
+    msg = msg.lower()
+    for key in FAQ:
+        if key in msg:
+            return FAQ[key]
+    return None
+
+
+def is_product_query(msg):
+    msg = msg.lower()
+    keywords = ["milk", "dal", "rice", "atta", "oil", "chahiye", "need", "buy"]
+    return any(k in msg for k in keywords)
+
+
+SENSITIVE_CHAT_PATTERNS = [
+    "phone number", "contact number", "mobile number", "owner number",
+    "support number", "seller number", "admin number", "email", "gmail",
+    "password", "otp", "api key", "secret", "database", "backend"
+]
+
+CUSTOMER_FAQ_RULES = [
+    (
+        ["how it works", "how smartdukaan works", "how does this work", "how to use"],
+        "SmartDukaan lets customers search products, browse categories, add items to the basket, and place orders from one simple shopping experience."
+    ),
+    (
+        ["marketplace", "all stores", "across stores", "global shopping"],
+        "The marketplace shows products from multiple stores in one place, so you can explore items without opening every store page separately."
+    ),
+    (
+        ["delivery", "home delivery"],
+        "If delivery is available for the store or assigned order, you can choose delivery during checkout."
+    ),
+    (
+        ["pickup", "pick up"],
+        "If the store supports it, you can choose pickup while placing your order."
+    ),
+    (
+        ["payment", "upi", "cash"],
+        "Customers can place orders using the payment or order options supported by the selected store, such as UPI or cash where available."
+    ),
+    (
+        ["nearby", "near me", "nearby stores", "shops near me"],
+        "Allow location access to discover nearby stores and products around you."
+    ),
+    (
+        ["order", "place order", "checkout"],
+        "Search products, add the items you want, click Review Order, and then submit your details to place the order."
+    ),
+    (
+        ["category", "categories", "grocery", "snacks", "beverages", "dairy"],
+        "You can browse items using the marketplace categories to quickly find groceries, snacks, beverages, dairy products, and more."
+    ),
+    (
+        ["seller login", "register seller", "seller account"],
+        "Seller registration and seller login are for store owners. As a customer, you only need to browse products and place orders."
+    ),
+]
+
+PRODUCT_QUERY_KEYWORDS = [
+    "milk", "dal", "rice", "atta", "oil", "bread", "biscuit", "biscuits",
+    "juice", "snack", "snacks", "grocery", "dairy", "egg", "eggs", "sugar",
+    "tea", "coffee", "soap", "shampoo", "need", "buy", "want", "chahiye"
+]
+
+
+def normalize_chat_message(msg):
+    return (msg or "").strip().lower()
+
+
+def is_sensitive_chat_query(msg):
+    normalized = normalize_chat_message(msg)
+    return any(pattern in normalized for pattern in SENSITIVE_CHAT_PATTERNS)
+
+
+def get_customer_safe_response(msg):
+    normalized = normalize_chat_message(msg)
+    for triggers, answer in CUSTOMER_FAQ_RULES:
+        if any(trigger in normalized for trigger in triggers):
+            return answer
+    return None
+
+
+def extract_product_search_term(msg):
+    normalized = normalize_chat_message(msg)
+    cleaned = re.sub(r"[^a-z0-9\s]", " ", normalized)
+    cleaned = re.sub(r"\s+", " ", cleaned).strip()
+    if not cleaned:
+        return ""
+
+    stopwords = {
+        "i", "want", "need", "buy", "please", "show", "me", "find", "give",
+        "do", "you", "have", "any", "nearby", "near", "store", "stores",
+        "product", "products", "for", "the", "a", "an", "to", "my", "some",
+        "chahiye", "looking"
+    }
+    terms = [word for word in cleaned.split() if word not in stopwords]
+    return " ".join(terms).strip() or cleaned
+
+
+def is_customer_product_query(msg):
+    normalized = normalize_chat_message(msg)
+    return any(k in normalized for k in PRODUCT_QUERY_KEYWORDS)
+
+
+@app.route("/chat", methods=["POST"])
+def chat():
+    data = request.json or {}
+    user_msg = data.get("message")
+    user_lat = data.get("lat")
+    user_lng = data.get("lng")
+    normalized_msg = normalize_chat_message(user_msg)
+    product_search = extract_product_search_term(user_msg)
+
+    try:
+        if not normalized_msg:
+            return jsonify({
+                "type": "text",
+                "data": "Ask me about SmartDukaan products, categories, delivery, pickup, nearby stores, or how ordering works."
+            })
+
+        if is_sensitive_chat_query(normalized_msg):
+            return jsonify({
+                "type": "text",
+                "data": "I can help customers with shopping, products, delivery, pickup, nearby stores, and how SmartDukaan works, but I do not share sensitive contact or system information."
+            })
+
+        customer_answer = get_customer_safe_response(normalized_msg)
+        if customer_answer:
+            return jsonify({"type": "text", "data": customer_answer})
+
+        if is_customer_product_query(normalized_msg):
+            if not user_lat or not user_lng:
+                products = Product.query.filter(
+                    Product.product_name.ilike(f"%{product_search}%")
+                ).all()
+
+                if products:
+                    result = [{
+                        "name": p.product_name,
+                        "price": p.price,
+                        "image": p.image_url
+                    } for p in products]
+                    return jsonify({"type": "products", "data": result})
+
+                return jsonify({
+                    "type": "text",
+                    "data": "Enable location if you want nearby store results. I can still help you search products across the marketplace."
+                })
+
+            products = Product.query.filter(
+                Product.product_name.ilike(f"%{product_search}%"),
+                Product.is_available == 1
+            ).all()
+
+            result = []
+            for p in products:
+                store = User.query.get(p.store_id)
+                if not store or not store.store_lat or not store.store_lng:
+                    continue
+
+                distance = calculate_distance(
+                    float(user_lat),
+                    float(user_lng),
+                    float(store.store_lat),
+                    float(store.store_lng)
+                )
+
+                if distance <= 5:
+                    result.append({
+                        "product": p.product_name,
+                        "price": p.price,
+                        "image": p.image_url,
+                        "store": store.store_name,
+                        "distance": round(distance, 2),
+                        "store_id": store.id
+                    })
+
+            result = sorted(result, key=lambda x: x["distance"])
+            if result:
+                return jsonify({"type": "nearby_products", "data": result})
+
+            return jsonify({
+                "type": "text",
+                "data": "I could not find that item in nearby stores right now. Try another product name or browse marketplace categories."
+            })
+
+        products = Product.query.filter(
+            Product.product_name.ilike(f"%{product_search or normalized_msg}%")
+        ).all()
+
+        if products:
+            result = [{
+                "name": p.product_name,
+                "price": p.price,
+                "image": p.image_url
+            } for p in products]
+            return jsonify({"type": "products", "data": result})
+
+        response = lex_client.recognize_text(
+            botId='FVS2N4KUEZ',
+            botAliasId='TSTALIASID',
+            localeId='en_US',
+            sessionId="user123",
+            text=user_msg
+        )
+
+        intent = response.get('sessionState', {}).get('intent', {}).get('name')
+        if intent == "Greeting":
+            return jsonify({
+                "type": "text",
+                "data": "Hello. I can help you find products, explain how SmartDukaan works, or show nearby shopping options."
+            })
+
+        if intent == "BudgetItems":
+            products = Product.query.filter(Product.price < 50).all()
+            result = [{
+                "name": p.product_name,
+                "price": p.price,
+                "image": p.image_url
+            } for p in products]
+            return jsonify({"type": "products", "data": result})
+
+        return jsonify({
+            "type": "text",
+            "data": "I can help with SmartDukaan customer questions like products, categories, delivery, pickup, nearby stores, and how ordering works."
+        })
+
+    except Exception as e:
+        print("ERROR:", e)
+        return jsonify({
+            "type": "text",
+            "data": "Server error"
+        })
+
+
+@app.route("/chatbot")
+def chatbot():
+    return render_template("chatbot.html")
+
 
 def generate_qr(data, filename=None):
     """
@@ -207,10 +472,6 @@ def parse_date(s):
 # Flask Routes
 # --------------------------------------------------------------------------------
 
-# Home Page Route 
-@app.route("/")
-def home():
-    return render_template("Home.html")  # keep exact filename
 # ---- Admin Login ----
 @app.route('/admin/login', methods=['GET', 'POST'])
 def admin_login():
@@ -853,6 +1114,17 @@ def dashboard():
         offer=offer
     )
 
+@app.route('/store_analytics')
+def store_analytics():
+    if 'seller_id' not in session:
+        return redirect('/login')
+
+    user = User.query.get(session['seller_id'])
+    if not user:
+        return redirect('/logout')
+
+    return render_template('store_analytics.html', user=user)
+
 # Seller ADD offer route 
 @app.route('/add_offer', methods=['POST'])
 def add_offer():
@@ -983,9 +1255,12 @@ def master_products():
             if not existing:
                 new_product = Product(
                     seller_id=seller_id,
+                    store_id=seller_id,
                     product_name=mp.name,
+                    category=mp.category,
                     price=price,
                     quantity=qty,
+                    is_available=qty > 0,
                     unit=unit,
                     image_url=mp.image_url
                 )
@@ -1009,6 +1284,7 @@ def add_product():
         product_name = request.form.get('product_name')
         price = request.form.get('price')
         quantity = request.form.get('quantity')
+        category = request.form.get('category')
         unit = request.form.get('unit')  # New line for unit
         image_file = request.files['image']
 
@@ -1023,9 +1299,12 @@ def add_product():
         try:
             new_product = Product(
                 seller_id=session['seller_id'],
+                store_id=session['seller_id'],
                 product_name=product_name,
+                category=(category or "").strip() or None,
                 price=float(price),
                 quantity=int(quantity),
+                is_available=int(quantity) > 0,
                 unit=unit,  # Store unit
                 image_url=image_url
             )
@@ -1068,9 +1347,12 @@ def edit_product(product_id):
     product = Product.query.get_or_404(product_id)
 
     if request.method == 'POST':
-        # Only update price and unit
+        quantity = int(request.form.get('quantity', product.quantity) or product.quantity)
         product.price = request.form.get('price')
+        product.category = (request.form.get('category') or "").strip() or None
         product.unit = request.form.get('unit')
+        product.quantity = quantity
+        product.is_available = quantity > 0
 
         db.session.commit()
         return redirect(url_for('my_products'))
@@ -1134,7 +1416,10 @@ def store_home(slug):
     search_query = request.args.get("q", "").strip()
 
     # Base query for products
-    products_query = Product.query.filter_by(seller_id=seller.id)
+    products_query = Product.query.filter_by(seller_id=seller.id).filter(
+        Product.is_available.is_(True),
+        Product.quantity > 0
+    )
 
     # If search query exists, filter products
     if search_query:
@@ -1163,8 +1448,7 @@ def store_home(slug):
 
 # Submit Order route Customer 
 # Submit Order route Customer 
-@app.route('/submit_order', methods=['POST'])
-def submit_order():
+def legacy_submit_order():
     slug = request.form.get("slug")   # ✅ ab slug le rahe hai
     phone = request.form.get("phone")
     delivery_type = request.form.get("delivery_type")
@@ -1271,8 +1555,7 @@ def check_new_orders():
     return jsonify({'new_order': False})
 
 # Separate: Route for showing order summary for Customer 
-@app.route('/your_order', methods=['GET'])
-def your_order():
+def legacy_your_order():
     phone = request.args.get('phone')
     store_name = request.args.get('store_name')
     if not phone or not store_name:
@@ -1288,8 +1571,7 @@ def your_order():
     return render_template('your_order.html', store_name=store_name, items=item_list, total=order.total_amount)
 
 # Customer Order route
-@app.route('/order_review', methods=['POST'])
-def order_review():
+def legacy_order_review():
     slug = request.form.get("slug")  # ✅ ab slug le rahe hai
     items_json = request.form.get("items_json")
     try:
@@ -1527,6 +1809,5 @@ def verify_otp():
 # Run the app and initialize DB
 if __name__ == '__main__':
     with app.app_context():
-        db.init_app(app)
         db.create_all()
     app.run(debug=True)

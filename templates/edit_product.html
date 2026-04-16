@@ -4,10 +4,12 @@
   <meta charset="UTF-8" />
   <title>Edit Product</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
+  {% include 'partials/app_design.html' %}
 </head>
 <body class="bg-gray-50 text-gray-800">
+  {% set active_page = 'dashboard' %}
+  {% include 'partials/app_nav_seller.html' %}
   <div class="min-h-screen flex items-center justify-center p-4">
     <div class="w-full max-w-xl bg-white border rounded-2xl p-6 md:p-8 shadow-sm">
       <div class="flex items-start justify-between">
@@ -55,6 +57,32 @@
 
         <!-- Unit -->
         <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Category</label>
+          <input
+            type="text"
+            name="category"
+            value="{{ product.category or '' }}"
+            placeholder="e.g. Grocery, Dairy, Snacks"
+            class="w-full rounded-lg border-gray-300 focus:ring-emerald-500 focus:border-emerald-500 px-3 py-2"
+          />
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Quantity</label>
+          <input
+            type="number"
+            min="0"
+            step="1"
+            name="quantity"
+            value="{{ product.quantity }}"
+            required
+            class="w-full rounded-lg border-gray-300 focus:ring-emerald-500 focus:border-emerald-500 px-3 py-2"
+          />
+          <p class="text-xs text-gray-500 mt-1">Set to 0 to mark the product out of stock.</p>
+        </div>
+
+        <!-- Unit -->
+        <div>
           <label class="block text-sm font-medium text-gray-700 mb-1">Unit</label>
           <input
             type="text"
@@ -80,5 +108,7 @@
       </form>
     </div>
   </div>
+  {% include 'partials/app_chat_fab.html' %}
+  {% include 'partials/app_nav_script.html' %}
 </body>
 </html>

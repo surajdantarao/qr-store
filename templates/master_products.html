@@ -4,14 +4,16 @@
   <meta charset="UTF-8" />
   <title>Master Products</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <!-- Tailwind CSS (UI only, logic unchanged) -->
   <script src="https://cdn.tailwindcss.com"></script>
+  {% include 'partials/app_design.html' %}
   <style>
     .table-wrap { overflow-x: auto; }
     .img-fallback { background: #f1f5f9; display:flex; align-items:center; justify-content:center; color:#64748b; }
   </style>
 </head>
 <body class="bg-gray-50 text-gray-800">
+  {% set active_page = 'dashboard' %}
+  {% include 'partials/app_nav_seller.html' %}
   <div class="max-w-6xl mx-auto px-4 py-6">
     <div class="flex items-center justify-between mb-5">
       <h1 class="text-2xl md:text-3xl font-bold">Master Products</h1>
@@ -78,7 +80,7 @@
 
               <!-- Quantity -->
               <td class="px-3 py-3 text-center">
-                <input type="number" step="0.01" min="0" name="qty_{{ product.id }}" placeholder="e.g. 10"
+                <input type="number" step="1" min="0" name="qty_{{ product.id }}" placeholder="e.g. 10"
                        class="w-24 rounded-lg border-gray-300 focus:ring-emerald-500 focus:border-emerald-500 px-2 py-1.5">
               </td>
 
@@ -150,5 +152,7 @@
     // Initial
     updateSelectionUI();
   </script>
+  {% include 'partials/app_chat_fab.html' %}
+  {% include 'partials/app_nav_script.html' %}
 </body>
 </html>
